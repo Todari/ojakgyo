@@ -23,7 +23,15 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    PretendardBlack: require('../assets/fonts/Pretendard-Black.ttf'),
+    PretendardBold: require('../assets/fonts/Pretendard-Bold.ttf'),
+    PretendardExtraBold: require('../assets/fonts/Pretendard-ExtraBold.ttf'),
+    PretendardExtraLight: require('../assets/fonts/Pretendard-ExtraLight.ttf'),
+    PretendardLight: require('../assets/fonts/Pretendard-Light.ttf'),
+    PretendardMedium: require('../assets/fonts/Pretendard-Medium.ttf'),
+    PretendardRegular: require('../assets/fonts/Pretendard-Regular.ttf'),
+    PretendardSemiBold: require('../assets/fonts/Pretendard-SemiBold.ttf'),
+    PretendardThin: require('../assets/fonts/Pretendard-Thin.ttf'),
     ...FontAwesome.font,
   });
 

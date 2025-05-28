@@ -2,13 +2,15 @@ import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import {Button} from '@/components/Button';
 
 export default function TabOneScreen() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className="bg-green-500">
       <Text style={styles.title}>Tab One</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <Button title="Button" onPress={() => {}} />
     </View>
   );
 }
