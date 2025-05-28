@@ -70,8 +70,10 @@ export function Categories() {
     <View style={styles.categoriesContainer}>
       {categoryKeys.map((keys, index) => (
         <View style={styles.categoryRow} key={index}>
-          {Array.from({length: MAX_ROWS}).map((_, index) => (
-            keys[index] ? <Category key={keys[index]} type={keys[index] as CategoryType} /> : <View style={styles.categoryTextContainer} />
+          {Array.from({length: MAX_ROWS}).map((_, colIdx) => (
+            keys[colIdx]
+              ? <Category key={keys[colIdx]} type={keys[colIdx] as CategoryType} />
+              : <View key={`empty-${index}-${colIdx}`} style={styles.categoryTextContainer} />
           ))}
         </View>
       ))}

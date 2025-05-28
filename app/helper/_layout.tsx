@@ -11,7 +11,7 @@ export default function HelperLayout() {
   return (
     <SafeAreaView style={styles.container}>
       <Header left='logo'/>
-      <PretendardText style={styles.headerText}>도움이 필요하신 분들을 찾아봐요</PretendardText>
+      <PretendardText style={styles.headerText}>도움이 필요하신 분들을 찾아볼까요?</PretendardText>
       <Button title="지도에서 어르신 찾기" onPress={() => {}}/>
       <Categories />
       <Button title="직접 도우미 등록하기" onPress={() => {}} variant="secondary"/>
