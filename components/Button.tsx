@@ -5,15 +5,13 @@ import {Button as DefaultButton} from 'react-native';
 import { PretendardText } from './StyledText';
 
 type ButtonSize = 'medium';
-type ButtonVariant = 'primary' | 'secondary';
-type ButtonWidth = 'full' | 'fit';
+type ButtonVariant = 'primary' | 'secondary'
 
 type ButtonStyleProps = {
   style?: ViewStyle;
   textStyle?: TextStyle;
   size?: ButtonSize;
   variant?: ButtonVariant;
-  width?: ButtonWidth;
 };
 
 type ButtonProps = DefaultButton['props'] & ButtonStyleProps;
@@ -27,7 +25,6 @@ export function Button({
   textStyle,
   size = 'medium',
   variant = 'primary',
-  width = 'fit',
   ...props  
 }: ButtonProps) {
   return (
@@ -35,7 +32,7 @@ export function Button({
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
-        buttonBaseStyle[width],
+        buttonBaseStyle.base,
         buttonVariantStyle[variant],
         buttonSizeStyle[size],
         style,
@@ -52,13 +49,7 @@ export function Button({
 }
 
 const buttonBaseStyle = StyleSheet.create({
-  full: {
-    display: 'flex',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fit: {
+  base: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
