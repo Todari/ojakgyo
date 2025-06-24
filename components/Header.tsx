@@ -2,6 +2,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { PretendardText } from './StyledText';
 import { View } from './Themed';
 import { Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 
 type HeaderLeft = 'logo' | 'back';
 
@@ -10,12 +11,13 @@ interface HeaderProps {
 }
 
 export function Header({ left }: HeaderProps) {
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
       {left === 'logo' && <PretendardText style={{ fontSize: 24, fontWeight: 'black' }}>OJAKGYO</PretendardText>}
       {left === 'back' && 
-      <Pressable onPress={() => {}}>
+      <Pressable onPress={() => router.back()}>
         <FontAwesome name="chevron-left" size={24} color="#333" />
       </Pressable>
       }
