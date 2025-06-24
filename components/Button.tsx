@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pressable, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { Text } from './Themed';
 import {Button as DefaultButton} from 'react-native';
 import { PretendardText } from './StyledText';
 
@@ -12,12 +11,13 @@ type ButtonStyleProps = {
   textStyle?: TextStyle;
   size?: ButtonSize;
   variant?: ButtonVariant;
+  onPress?: () => void;
 };
 
 type ButtonProps = DefaultButton['props'] & ButtonStyleProps;
 
 
-export function Button({
+export const Button = React.forwardRef<any, ButtonProps>(function Button({
   title,
   onPress,
   disabled = false,
@@ -26,9 +26,10 @@ export function Button({
   size = 'medium',
   variant = 'primary',
   ...props  
-}: ButtonProps) {
+}, ref) {
   return (
     <Pressable
+      ref={ref}
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
@@ -42,11 +43,11 @@ export function Button({
       {...props}
     >
       <PretendardText style={[textSizeStyle[size], textVariantStyle[variant], textStyle]}>
-        {title}
+        {title} 
       </PretendardText>
     </Pressable>
   );
-}
+});
 
 const buttonBaseStyle = StyleSheet.create({
   base: {
