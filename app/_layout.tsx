@@ -1,68 +1,34 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { Stack, SplashScreen } from 'expo-router';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    PretendardBlack: require('../assets/fonts/Pretendard-Black.ttf'),
-    PretendardBold: require('../assets/fonts/Pretendard-Bold.ttf'),
-    PretendardExtraBold: require('../assets/fonts/Pretendard-ExtraBold.ttf'),
-    PretendardExtraLight: require('../assets/fonts/Pretendard-ExtraLight.ttf'),
-    PretendardLight: require('../assets/fonts/Pretendard-Light.ttf'),
-    PretendardMedium: require('../assets/fonts/Pretendard-Medium.ttf'),
-    PretendardRegular: require('../assets/fonts/Pretendard-Regular.ttf'),
-    PretendardSemiBold: require('../assets/fonts/Pretendard-SemiBold.ttf'),
-    PretendardThin: require('../assets/fonts/Pretendard-Thin.ttf'),
-    ...FontAwesome.font,
+  const [fontsLoaded] = useFonts({
+    PretendardBlack: require('../assets/fonts/PretendardBlack.ttf'),
+    PretendardBold: require('../assets/fonts/PretendardBold.ttf'),
+    PretendardExtraBold: require('../assets/fonts/PretendardExtraBold.ttf'),
+    PretendardExtraLight: require('../assets/fonts/PretendardExtraLight.ttf'),
+    PretendardLight: require('../assets/fonts/PretendardLight.ttf'),
+    PretendardMedium: require('../assets/fonts/PretendardMedium.ttf'),
+    PretendardRegular: require('../assets/fonts/PretendardRegular.ttf'),
+    PretendardSemiBold: require('../assets/fonts/PretendardSemiBold.ttf'),
+    PretendardThin: require('../assets/fonts/PretendardThin.ttf'),
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded]);
 
-  if (!loaded) {
+  if (!fontsLoaded) {
     return null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="helper" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
-  );
+  return <Stack>
+    <Stack.Screen name="index" options={{ headerShown: false }} />
+    <Stack.Screen name="helper/index" options={{ headerShown: false }} />
+    <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
+    <Stack.Screen name="children/index" options={{ headerShown: false }} />
+  </Stack>;
 }
