@@ -14,14 +14,21 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.ojakgyo"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION"
+      ],
+      "package": "com.anonymous.ojakgyo"
     },
     "web": {
       "bundler": "metro",
@@ -29,10 +36,46 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "@mj-studio/react-native-naver-map",
+        {
+          "client_id": "df1dejil9w",
+          "android": {
+            "ACCESS_FINE_LOCATION": true,
+            "ACCESS_COARSE_LOCATION": true,
+            "ACCESS_BACKGROUND_LOCATION": true
+          },
+          "ios": {
+            "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 지도를 표시하고 위치 기반 서비스를 위해 사용자의 위치 접근 권한이 필요합니다.",
+            "NSLocationWhenInUseUsageDescription": "이 앱은 지도를 표시하고 위치 기반 서비스를 위해 사용자의 위치 접근 권한이 필요합니다.",
+            "NSLocationTemporaryUsageDescriptionDictionary": {
+              "purposeKey": "임시 위치 권한이 필요한 이유",
+              "usageDescription": "이 기능은 지도 및 위치 기반 서비스를 위해 임시 위치 접근 권한이 필요합니다."
+            }
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://repository.map.naver.com/archive/maven"
+            ]
+          }
+        }
+      ],
       "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dbba22f9-a12e-4c35-b34a-bd2e5c9b7b12"
+      }
+    },
+    "owner": "todari"
   }
 }
