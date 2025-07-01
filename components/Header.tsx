@@ -3,7 +3,7 @@ import { View } from './Themed';
 import { Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/colors';
-import Typography from './Typography';
+import { Typography } from '@/components/Typography';
 
 type HeaderLeft = 'logo' | 'back';
 
