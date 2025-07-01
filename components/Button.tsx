@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Colors from '@/constants/colors';
-import Typography, { TextColor, TextVariant } from './Typography';
+import { Typography, TextColor, TextVariant } from '@/components/Typography';
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -40,23 +40,23 @@ const SIZE_STYLE: Record<ButtonSize, { container: ViewStyle; text: TextVariant }
       paddingHorizontal: 12,
       borderRadius: 12,
     },
-    text: 'caption'
+    text: 'body'
   },
   md: {
     container: {
       paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 16,
+      paddingHorizontal: 18,
+      borderRadius: 18,
     },
-    text: 'body'
+    text: 'subtitle'
   },
   lg: {
     container: {
       paddingVertical: 16,
-      paddingHorizontal: 20,
-      borderRadius: 20,
+      paddingHorizontal: 24,
+      borderRadius: 24,
     },
-    text: 'subtitle'
+    text: 'title'
   },
 };
 
@@ -106,7 +106,6 @@ export const Button = React.forwardRef<any, ButtonProps>(function Button(
     disabled = false,
     loading = false,
     style,
-    textStyle,
     variant = 'primary',
     size = 'md',
     fullWidth = false,
@@ -138,7 +137,7 @@ export const Button = React.forwardRef<any, ButtonProps>(function Button(
       {loading && (
         <ActivityIndicator size="small" style={{ marginRight: 8 }} />
       )}
-      <Typography variant={variantToken} color={colorToken} style={textStyle} truncate weight='bold'>
+      <Typography variant={variantToken} color={colorToken} truncate weight='bold'>
         {title}
       </Typography>
     </Pressable>
