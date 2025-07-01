@@ -1,16 +1,15 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
+import { SafeAreaView } from '@/components/Themed';
 
 export default function Home() {
 
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView>
       <Header left='logo'/>
       <Button
         title="Children으로 이동"
@@ -24,11 +23,3 @@ export default function Home() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    paddingHorizontal: 24,
-    gap: 24,
-  },
-});

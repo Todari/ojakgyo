@@ -1,6 +1,7 @@
 import { View, StyleSheet, Image } from "react-native";
-import { PretendardText } from "./StyledText";
+import { Typography } from '@/components/Typography';
 
+//TODO: 카테고리 서버에 추가하기 (supabase)
 const CATEGORY_TABLE = {
   digital: {
     order: 1,
@@ -50,7 +51,15 @@ function Category({ type }: CategoryProps) {
     <View style={styles.categoryContainer}>
       <Image source={CATEGORY_TABLE[type].image} style={styles.categoryImage} />
       <View style={styles.categoryTextContainer}>
-        <PretendardText style={styles.categoryText}>{CATEGORY_TABLE[type].title}</PretendardText>
+        <Typography
+          variant='body'
+          align='center'
+          color='default'
+          weight='bold'
+          numberOfLines={2}
+        >
+          {CATEGORY_TABLE[type].title}
+        </Typography>
       </View>
     </View>
   );
@@ -106,14 +115,9 @@ const styles = StyleSheet.create({
   categoryTextContainer: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 2,
     width: 80,
-    height: 40,
+    minHeight: 40,
   },
-  categoryText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  }
 });

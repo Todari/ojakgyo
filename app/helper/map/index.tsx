@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import { User } from '@/types/model';
-import { Text } from '@/components/Themed';
-import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NaverMapMarkerOverlay, NaverMapView, NaverMapViewRef } from '@mj-studio/react-native-naver-map';
 import * as Location from 'expo-location'
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUsers } from '@/hooks/useUsers';
-import Typography from '@/components/Typography';
+import { Typography } from '@/components/Typography';
 
 export default function Map() {
   const navigation = useNavigation();

@@ -1,9 +1,9 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from '@/components/Themed';
 import { StyleSheet } from 'react-native';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
-import Typography from '@/components/Typography';
+import { Typography } from '@/components/Typography';
 
 export default function ChildrenPage() {
 
