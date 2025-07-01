@@ -137,5 +137,3 @@ export function Typography({
     </ThemedText>
   );
 }
-
-export default Typography; 
