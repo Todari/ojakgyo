@@ -29,6 +29,7 @@ export default function RootLayout() {
     <Stack.Screen name="index" options={{ headerShown: false }} />
     <Stack.Screen name="helper/index" options={{ headerShown: false }} />
     <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
+    <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />
     <Stack.Screen name="children/index" options={{ headerShown: false }} />
   </Stack>;
 }
