@@ -1,99 +1,167 @@
 import React from 'react';
-import { Pressable, StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import {Button as DefaultButton} from 'react-native';
-import { PretendardText } from './StyledText';
+import {
+  Pressable,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  ActivityIndicator,
+} from 'react-native';
+import Colors from '@/constants/colors';
+import Typography, { TextColor, TextVariant } from './Typography';
 
-type ButtonSize = 'medium';
-type ButtonVariant = 'primary' | 'secondary'
+/* -------------------------------------------------------------------------- */
+/*                                    Types                                   */
+/* -------------------------------------------------------------------------- */
 
-type ButtonStyleProps = {
+type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'outline' | 'ghost';
+
+type ButtonSize = 'sm' | 'md' | 'lg';
+
+export interface ButtonProps {
+  title: string;
+  onPress?: () => void;
+  disabled?: boolean;
+  loading?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
-  size?: ButtonSize;
   variant?: ButtonVariant;
-  onPress?: () => void;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Helpers                                   */
+/* -------------------------------------------------------------------------- */
+
+const SIZE_STYLE: Record<ButtonSize, { container: ViewStyle; text: TextVariant }> = {
+  sm: {
+    container: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+    },
+    text: 'caption'
+  },
+  md: {
+    container: {
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 16,
+    },
+    text: 'body'
+  },
+  lg: {
+    container: {
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      borderRadius: 20,
+    },
+    text: 'subtitle'
+  },
 };
 
-type ButtonProps = DefaultButton['props'] & ButtonStyleProps;
+const VARIANT_STYLE: Record<ButtonVariant, { container: ViewStyle; text: TextColor }> = {
+  primary: {
+    container: {
+      backgroundColor: Colors.light.tint,
+    },
+    text: 'inverse',
+  },
+  secondary: {
+    container: {
+      backgroundColor: '#E5E5E5',
+    },
+    text: 'default'
+  },
+  tertiary: {
+    container: {
+      backgroundColor: '#F1F1F1',
+    },
+    text: 'default'
+  },
+  outline: {
+    container: {
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: Colors.light.tint,
+    },
+    text: 'default'
+  },
+  ghost: {
+    container: {
+      backgroundColor: 'transparent',
+    },
+    text: 'default'
+  },
+};
 
+/* -------------------------------------------------------------------------- */
+/*                                 Component                                  */
+/* -------------------------------------------------------------------------- */
 
-export const Button = React.forwardRef<any, ButtonProps>(function Button({
-  title,
-  onPress,
-  disabled = false,
-  style,
-  textStyle,
-  size = 'medium',
-  variant = 'primary',
-  ...props  
-}, ref) {
+export const Button = React.forwardRef<any, ButtonProps>(function Button(
+  {
+    title,
+    onPress,
+    disabled = false,
+    loading = false,
+    style,
+    textStyle,
+    variant = 'primary',
+    size = 'md',
+    fullWidth = false,
+  },
+  ref
+) {
+  const containerStyles = [
+    styles.base,
+    SIZE_STYLE[size].container,
+    VARIANT_STYLE[variant].container,
+    fullWidth && styles.fullWidth,
+    disabled && styles.disabled,
+    style,
+  ];
+
+  const variantToken = SIZE_STYLE[size].text;
+  const colorToken = VARIANT_STYLE[variant].text;
+
   return (
     <Pressable
       ref={ref}
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || loading}
       style={({ pressed }) => [
-        buttonBaseStyle.base,
-        buttonVariantStyle[variant],
-        buttonSizeStyle[size],
-        style,
-        disabled && buttonBaseStyle.disabled,
-        pressed && buttonBaseStyle.pressed,
+        ...containerStyles,
+        pressed && !disabled && styles.pressed,
       ]}
-      {...props}
     >
-      <PretendardText style={[textSizeStyle[size], textVariantStyle[variant], textStyle]}>
-        {title} 
-      </PretendardText>
+      {loading && (
+        <ActivityIndicator size="small" style={{ marginRight: 8 }} />
+      )}
+      <Typography variant={variantToken} color={colorToken} style={textStyle} truncate weight='bold'>
+        {title}
+      </Typography>
     </Pressable>
   );
 });
 
-const buttonBaseStyle = StyleSheet.create({
+/* -------------------------------------------------------------------------- */
+/*                                    Styles                                  */
+/* -------------------------------------------------------------------------- */
+
+const styles = StyleSheet.create({
   base: {
-    display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  disabled: {
-    opacity: 0.5,
   },
   pressed: {
     opacity: 0.7,
   },
-});
-
-const buttonVariantStyle = StyleSheet.create({
-  primary: {
-    backgroundColor: '#21B500',
-    color: '#fff',
+  disabled: {
+    opacity: 0.5,
   },
-  secondary: {
-    backgroundColor: '#E5E5E5',
-    color: '#333',
-  },
-});
-
-const textVariantStyle = StyleSheet.create({
-  primary: {
-    color: '#fff',
-  },
-  secondary: {
-    color: '#333',
-  },
-});
-
-const buttonSizeStyle = StyleSheet.create({
-  medium: {
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-  },
-});
-
-const textSizeStyle = StyleSheet.create({
-  medium: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  fullWidth: {
+    alignSelf: 'stretch',
   },
 });

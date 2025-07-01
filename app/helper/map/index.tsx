@@ -7,6 +7,7 @@ import * as Location from 'expo-location'
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUsers } from '@/hooks/useUsers';
+import Typography from '@/components/Typography';
 
 export default function Map() {
   const navigation = useNavigation();
@@ -49,8 +50,8 @@ export default function Map() {
         locale='ko'
         isExtentBoundedInKorea
       >
-        {isLoading && <Text>로딩 중...</Text>}
-        {error && <Text>에러가 발생했습니다.</Text>}
+        {isLoading && <Typography variant='body' weight='bold'>로딩 중...</Typography>}
+        {error && <Typography variant='body' weight='bold'>에러가 발생했습니다.</Typography>}
         {users && users.map((user: User) => (
           <NaverMapMarkerOverlay
             key={user.id}

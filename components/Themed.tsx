@@ -5,7 +5,7 @@
 
 import { Text as DefaultText, View as DefaultView } from 'react-native';
 
-import Colors from '@/constants/Colors';
+import Colors from '@/constants/colors';
 import { useColorScheme } from './useColorScheme';
 
 type ThemeProps = {
@@ -18,16 +18,20 @@ export type ViewProps = ThemeProps & DefaultView['props'];
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorPath: string
 ) {
   const theme = useColorScheme() ?? 'light';
   const colorFromProps = props[theme];
 
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
+  if (colorFromProps) return colorFromProps;
+
+  // 지원: 'text', 'background', 'tint', 'tokens.text.default' 등
+  const segments = colorPath.split('.');
+  let value: any = Colors[theme];
+  for (const seg of segments) {
+    value = value?.[seg];
   }
+  return value;
 }
 
 export function Text(props: TextProps) {

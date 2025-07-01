@@ -1,8 +1,9 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { PretendardText } from './StyledText';
 import { View } from './Themed';
 import { Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import Colors from '@/constants/colors';
+import Typography from './Typography';
 
 type HeaderLeft = 'logo' | 'back';
 
@@ -15,18 +16,18 @@ export function Header({ left }: HeaderProps) {
 
   return (
     <View style={styles.container}>
-      {left === 'logo' && <PretendardText style={{ fontSize: 24, fontWeight: 'black' }}>OJAKGYO</PretendardText>}
+      {left === 'logo' && <Typography variant='subtitle' color='default' weight='black'>OJAKGYO</Typography>}
       {left === 'back' && 
       <Pressable onPress={() => router.back()}>
-        <FontAwesome name="chevron-left" size={24} color="#333" />
+        <FontAwesome name="chevron-left" size={24} color={Colors.light.text} />
       </Pressable>
       }
       <View style={styles.rightContainer}>
         <Pressable onPress={() => {}}>
-          <FontAwesome name="comments" size={40} color="#999" />
+          <FontAwesome name="comments" size={40} color={Colors.light.tokens.text.secondary} />
         </Pressable>
         <Pressable onPress={() => {}}>
-          <FontAwesome name="user" size={40} color="#999" />
+          <FontAwesome name="user" size={40} color={Colors.light.tokens.text.secondary} />
         </Pressable>
       </View>
     </View>
