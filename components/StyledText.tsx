@@ -1,4 +1,4 @@
-import Typography, { TypographyProps } from './Typography';
+import { Typography, TypographyProps } from '@/components/Typography';
 import { Text as ThemedText, TextProps as ThemedTextProps } from './Themed';
 
 export function MonoText(props: ThemedTextProps) {
