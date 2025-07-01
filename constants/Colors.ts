@@ -1,4 +1,4 @@
-import { gray, primary } from './palette';
+import { gray, primary, success, warning, error } from './palette';
 
 export type ColorMode = 'light' | 'dark';
 
@@ -9,6 +9,9 @@ export type ColorMode = 'light' | 'dark';
 export const palette = {
   gray,
   primary,
+  success,
+  warning,
+  error,
   // TODO: secondary / success / warning / error …
 } as const;
 
@@ -24,8 +27,8 @@ export const semantic = {
       inverse: palette.gray[0],
     },
     bg: {
-      default: palette.gray[0],
-      subtle: palette.gray[50],
+      default: palette.gray[50],
+      subtle: palette.gray[100],
     },
     brand: {
       primary: palette.primary[500],
