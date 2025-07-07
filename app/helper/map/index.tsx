@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUsers } from '@/hooks/useUsers';
 import { Typography } from '@/components/Typography';
 
-export default function Map() {
+export default function HelperMapPage() {
   const navigation = useNavigation();
   const { users, isLoading, error } = useUsers();
 

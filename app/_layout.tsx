@@ -27,6 +27,8 @@ export default function RootLayout() {
 
   return <Stack>
     <Stack.Screen name="index" options={{ headerShown: false }} />
+    <Stack.Screen name="auth/index" options={{ headerShown: false }} />
+    <Stack.Screen name="auth/callback/kakao" options={{ headerShown: false }} />
     <Stack.Screen name="helper/index" options={{ headerShown: false }} />
     <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
     <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />

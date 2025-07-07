@@ -7,7 +7,6 @@ import { Input } from "@/components/Input";
 import { ToggleChip } from "@/components/ToggleChip";
 
 export default function HelperRegisterPage() {
-  const router = useRouter();
 
   return (
     <SafeAreaView>
