@@ -8,12 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		37BBAEA228356D80105953E9 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4BBA8092DEF92427193D81 /* ExpoModulesProvider.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		5CEA686A84D04A88877BD475 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750CA876ACE74523A03C2277 /* noop-file.swift */; };
-		A5D4295AD2FD313EEF94691A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D8ACB2AF7B9C5A3856E3F55D /* PrivacyInfo.xcprivacy */; };
+		59A8F2FA0DCA609B77AB8DFA /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B05D91F65C8E020023FDF6 /* ExpoModulesProvider.swift */; };
+		6F9C8F70F6E8836BFAB2BB63 /* libPods-ojakgyo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B55961EB08EA3BD45CEC74C2 /* libPods-ojakgyo.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		DF8AE80C2E9C67AC67489C73 /* libPods-ojakgyo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B8B57FCADC2ED3816618F42 /* libPods-ojakgyo.a */; };
+		E7330A1A38E7F5376F963775 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 401A27841386D323583A3A5E /* PrivacyInfo.xcprivacy */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -21,14 +20,13 @@
 		13B07F961A680F5B00A75B9A /* ojakgyo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ojakgyo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ojakgyo/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ojakgyo/Info.plist; sourceTree = "<group>"; };
-		2E4BBA8092DEF92427193D81 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ojakgyo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		4B8B57FCADC2ED3816618F42 /* libPods-ojakgyo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ojakgyo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		65B024B3F9FAEE030BBEB9B1 /* Pods-ojakgyo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ojakgyo.release.xcconfig"; path = "Target Support Files/Pods-ojakgyo/Pods-ojakgyo.release.xcconfig"; sourceTree = "<group>"; };
-		750CA876ACE74523A03C2277 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "ojakgyo/noop-file.swift"; sourceTree = "<group>"; };
+		13E80D71B0513B01042483F4 /* Pods-ojakgyo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ojakgyo.debug.xcconfig"; path = "Target Support Files/Pods-ojakgyo/Pods-ojakgyo.debug.xcconfig"; sourceTree = "<group>"; };
+		401A27841386D323583A3A5E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = ojakgyo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		6DD58ED71BD1AAE6E43697D8 /* Pods-ojakgyo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ojakgyo.release.xcconfig"; path = "Target Support Files/Pods-ojakgyo/Pods-ojakgyo.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = ojakgyo/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B55961EB08EA3BD45CEC74C2 /* libPods-ojakgyo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ojakgyo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B9B05D91F65C8E020023FDF6 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ojakgyo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		D7B72E9BDB11983AA813B9CE /* Pods-ojakgyo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ojakgyo.debug.xcconfig"; path = "Target Support Files/Pods-ojakgyo/Pods-ojakgyo.debug.xcconfig"; sourceTree = "<group>"; };
-		D8ACB2AF7B9C5A3856E3F55D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = ojakgyo/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ojakgyo/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* ojakgyo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ojakgyo-Bridging-Header.h"; path = "ojakgyo/ojakgyo-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -39,21 +37,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF8AE80C2E9C67AC67489C73 /* libPods-ojakgyo.a in Frameworks */,
+				6F9C8F70F6E8836BFAB2BB63 /* libPods-ojakgyo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0EC7FEB406481394A0D4DA82 /* ojakgyo */ = {
-			isa = PBXGroup;
-			children = (
-				2E4BBA8092DEF92427193D81 /* ExpoModulesProvider.swift */,
-			);
-			name = ojakgyo;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* ojakgyo */ = {
 			isa = PBXGroup;
 			children = (
@@ -63,8 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				D8ACB2AF7B9C5A3856E3F55D /* PrivacyInfo.xcprivacy */,
-				750CA876ACE74523A03C2277 /* noop-file.swift */,
+				401A27841386D323583A3A5E /* PrivacyInfo.xcprivacy */,
 			);
 			name = ojakgyo;
 			sourceTree = "<group>";
@@ -73,7 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				4B8B57FCADC2ED3816618F42 /* libPods-ojakgyo.a */,
+				B55961EB08EA3BD45CEC74C2 /* libPods-ojakgyo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -92,8 +81,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				A609ECACEC259979FE06474A /* Pods */,
-				84496FFC6619F0B662EC3738 /* ExpoModulesProviders */,
+				D740D1D15DDB17EF3C010812 /* Pods */,
+				B539906E66B197009ECC5376 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -108,22 +97,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		84496FFC6619F0B662EC3738 /* ExpoModulesProviders */ = {
+		B539906E66B197009ECC5376 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				0EC7FEB406481394A0D4DA82 /* ojakgyo */,
+				D3414F94924EB8A7E9600345 /* ojakgyo */,
 			);
 			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		A609ECACEC259979FE06474A /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				D7B72E9BDB11983AA813B9CE /* Pods-ojakgyo.debug.xcconfig */,
-				65B024B3F9FAEE030BBEB9B1 /* Pods-ojakgyo.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -135,6 +114,24 @@
 			path = ojakgyo/Supporting;
 			sourceTree = "<group>";
 		};
+		D3414F94924EB8A7E9600345 /* ojakgyo */ = {
+			isa = PBXGroup;
+			children = (
+				B9B05D91F65C8E020023FDF6 /* ExpoModulesProvider.swift */,
+			);
+			name = ojakgyo;
+			sourceTree = "<group>";
+		};
+		D740D1D15DDB17EF3C010812 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				13E80D71B0513B01042483F4 /* Pods-ojakgyo.debug.xcconfig */,
+				6DD58ED71BD1AAE6E43697D8 /* Pods-ojakgyo.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "ojakgyo" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				0969964AF921A83B096865F2 /* [Expo] Configure project */,
+				12EF54495E52749E00FA16E4 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				219A1AAFFD6CBC259BECEF8A /* [CP] Embed Pods Frameworks */,
+				AC0D0B57D10C1835659A8EA6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -199,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				A5D4295AD2FD313EEF94691A /* PrivacyInfo.xcprivacy in Resources */,
+				E7330A1A38E7F5376F963775 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,7 +240,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0969964AF921A83B096865F2 /* [Expo] Configure project */ = {
+		12EF54495E52749E00FA16E4 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -261,28 +258,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-ojakgyo/expo-configure-project.sh\"\n";
-		};
-		219A1AAFFD6CBC259BECEF8A /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ojakgyo/Pods-ojakgyo-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsGeometry/NMapsGeometry.framework/NMapsGeometry",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsMap/NMapsMap.framework/NMapsMap",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NMapsGeometry.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NMapsMap.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ojakgyo/Pods-ojakgyo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -320,6 +295,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ojakgyo/Pods-ojakgyo-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		AC0D0B57D10C1835659A8EA6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ojakgyo/Pods-ojakgyo-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsGeometry/NMapsGeometry.framework/NMapsGeometry",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/NMapsMap/NMapsMap.framework/NMapsMap",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NMapsGeometry.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NMapsMap.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ojakgyo/Pods-ojakgyo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -328,8 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				37BBAEA228356D80105953E9 /* ExpoModulesProvider.swift in Sources */,
-				5CEA686A84D04A88877BD475 /* noop-file.swift in Sources */,
+				59A8F2FA0DCA609B77AB8DFA /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,7 +334,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7B72E9BDB11983AA813B9CE /* Pods-ojakgyo.debug.xcconfig */;
+			baseConfigurationReference = 13E80D71B0513B01042483F4 /* Pods-ojakgyo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -374,7 +370,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 65B024B3F9FAEE030BBEB9B1 /* Pods-ojakgyo.release.xcconfig */;
+			baseConfigurationReference = 6DD58ED71BD1AAE6E43697D8 /* Pods-ojakgyo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

@@ -58,8 +58,6 @@
       <key>임시 위치 권한이 필요한 이유</key>
       <string>이 기능은 지도 및 위치 기반 서비스를 위해 임시 위치 접근 권한이 필요합니다.</string>
     </dict>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
