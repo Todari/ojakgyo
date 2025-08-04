@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
-import { Stack, SplashScreen } from 'expo-router';
+import { Stack, SplashScreen, useRouter, useSegments } from 'expo-router';
 import { useFonts } from 'expo-font';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -25,13 +29,39 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Stack>
-    <Stack.Screen name="index" options={{ headerShown: false }} />
-    <Stack.Screen name="auth/index" options={{ headerShown: false }} />
-    <Stack.Screen name="auth/callback/kakao" options={{ headerShown: false }} />
-    <Stack.Screen name="helper/index" options={{ headerShown: false }} />
-    <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
-    <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />
-    <Stack.Screen name="children/index" options={{ headerShown: false }} />
-  </Stack>;
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
+  );
+}
+
+function RootLayoutNav() {
+  const { session, loading } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
+
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === 'auth';
+
+    if (session && !inAuthGroup) {
+      router.replace('/helper');
+    } else if (!session) {
+      router.replace('/auth');
+    }
+  }, [session, loading, segments]);
+
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/index" options={{ headerShown: false }} />
+      <Stack.Screen name="auth/callback/kakao" options={{ headerShown: false }} />
+      <Stack.Screen name="helper/index" options={{ headerShown: false }} />
+      <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
+      <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />
+      <Stack.Screen name="children/index" options={{ headerShown: false }} />
+    </Stack>
+  );
 }

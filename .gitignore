@@ -81,3 +81,5 @@ yarn-error.*
 
 ios/
 android/
+
+*.sql
