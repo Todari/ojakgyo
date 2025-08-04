@@ -13,7 +13,7 @@ export function useUsers() {
       setIsLoading(true);
       setError(null);
       const { data, error } = await supabase
-        .from('user')
+        .from('users')
         .select("id, name, lat, lng")
         // .select('id, name, lat, lng')
         // .order('id', { ascending: true });
