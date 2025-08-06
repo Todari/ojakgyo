@@ -35,9 +35,9 @@ export interface TextAreaProps extends TextInputProps {
 /* -------------------------------------------------------------------------- */
 
 const SIZE_PRESET: Record<TextAreaSize, { minHeight: number; fontSize: number; padding: number }> = {
-  sm: { minHeight: 96, fontSize: 16, padding: 12 },
-  md: { minHeight: 128, fontSize: 20, padding: 16 },
-  lg: { minHeight: 160, fontSize: 24, padding: 20 },
+  sm: { minHeight: 80, fontSize: 14, padding: 12 },
+  md: { minHeight: 100, fontSize: 16, padding: 16 },
+  lg: { minHeight: 120, fontSize: 18, padding: 20 },
 };
 
 /* -------------------------------------------------------------------------- */

@@ -46,9 +46,9 @@ const SIZE_PRESET: Record<
     fontSize: number;
   }
 > = {
-  sm: { height: 40, paddingHorizontal: 12, fontSize: 16 },
-  md: { height: 52, paddingHorizontal: 18, fontSize: 20 },
-  lg: { height: 64, paddingHorizontal: 24, fontSize: 24 },
+  sm: { height: 40, paddingHorizontal: 12, fontSize: 14 },
+  md: { height: 48, paddingHorizontal: 16, fontSize: 16 },
+  lg: { height: 56, paddingHorizontal: 20, fontSize: 18 },
 };
 
 /* -------------------------------------------------------------------------- */

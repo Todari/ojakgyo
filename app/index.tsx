@@ -11,7 +11,6 @@ export default function Home() {
   return (
     <SafeAreaView>
       <Header left='logo'/>
-      <Button title="Auth로 이동" onPress={() => router.push('/auth')}/>
       <Button
         title="Children으로 이동"
         onPress={() => router.push('/children')}
