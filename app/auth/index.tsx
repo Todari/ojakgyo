@@ -27,21 +27,16 @@ export default function AuthPage() {
       const profile: KakaoProfile = await getProfile();
       console.log("Kakao profile:", profile);
 
-      // 사용자 정보를 Auth Context에 저장
-      const userInfo = {
-        id: profile.id.toString(), // number를 string으로 변환
-        nickname: profile.nickname,
-        profileImageUrl: profile.profileImageUrl,
-        email: profile.email,
-        provider: 'kakao' as const,
-      };
-
-      await authLogin(userInfo);
+      // Supabase 연동 로그인/회원가입
+      await authLogin(
+        profile.id.toString(), // 카카오 ID
+        profile.nickname, // 닉네임
+        profile.profileImageUrl, // 프로필 이미지
+        profile.email // 이메일
+      );
 
       // 상태 업데이트가 완료될 때까지 잠시 대기
-      setTimeout(() => {
-        router.replace('/');
-      }, 100);
+      router.replace('/');
 
     } catch (error) {
       console.error("Kakao login error:", error);

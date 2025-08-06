@@ -6,9 +6,8 @@ import { Button } from '@/components/Button';
 import { Categories } from '@/components/Categories';
 import { useRouter } from 'expo-router';
 import { Typography } from '@/components/Typography';
-// import { supabase } from '@/utils/supabase';
-import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/utils/supabase';
+import { useAuth } from '@/hooks/useAuth';
 
 interface HelperApplication {
   id: string;
@@ -37,7 +36,7 @@ export default function HelperPage() {
       const { data, error } = await supabase
         .from('helper_applications')
         .select('*')
-        .eq('user_id', session.user.id)
+        .eq('user_id', session.user.supabaseId)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();

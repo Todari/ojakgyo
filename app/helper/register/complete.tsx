@@ -6,7 +6,7 @@ import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
 import { ToggleChip } from "@/components/ToggleChip";
 import { useRouter, useLocalSearchParams } from "expo-router";
-// import { supabase } from "@/utils/supabase";
+import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomButton } from "@/components/BottomButton";
 
@@ -30,7 +30,7 @@ export default function HelperCompletePage() {
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
 
   const handleSubmit = async () => {
-    if (!session?.user) {
+    if (!session?.user?.supabaseId) {
       Alert.alert('오류', '로그인이 필요합니다.');
       router.push('/auth');
       return;
@@ -39,12 +39,11 @@ export default function HelperCompletePage() {
     setIsSubmitting(true);
     
     try {
-      // Supabase 데이터 저장 코드 (주석처리)
-      /*
+      // Supabase에 헬퍼 신청서 저장
       const { data, error } = await supabase
         .from('helper_applications')
         .insert({
-          user_id: session.user.id,
+          user_id: session.user.supabaseId,
           name: name as string,
           age: parseInt(age as string),
           categories: selectedCategories,
@@ -59,19 +58,8 @@ export default function HelperCompletePage() {
         Alert.alert('오류', '신청서 제출 중 오류가 발생했습니다.');
         return;
       }
-      */
 
-      // 임시로 로컬에 저장 (실제로는 서버에 저장해야 함)
-      console.log('Helper application submitted:', {
-        user_id: session.user.id,
-        name: name as string,
-        age: parseInt(age as string),
-        categories: selectedCategories,
-        introduction: introduction as string,
-        experience: (experience as string) || null,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      });
+      console.log('Helper application submitted successfully:', data);
 
       Alert.alert(
         '신청 완료!', 
