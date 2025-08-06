@@ -9,17 +9,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomButton } from "@/components/BottomButton";
-
-// 카테고리 매핑
-const CATEGORY_MAP = {
-  'appliance': { label: '가전제품 수리', icon: '🔧' },
-  'digital': { label: '디지털 기기 도움', icon: '📱' },
-  'furniture': { label: '가구 조립/수리', icon: '🪑' },
-  'clean': { label: '청소/정리', icon: '🧹' },
-  'errands': { label: '심부름/장보기', icon: '🛒' },
-  'companionship': { label: '말벗/동행', icon: '👥' },
-  'etc': { label: '기타', icon: '✨' },
-};
+import { CATEGORY_MAP, getCategoryById } from "@/constants/categories";
 
 export default function HelperCompletePage() {
   const router = useRouter();
@@ -49,21 +39,32 @@ export default function HelperCompletePage() {
           categories: selectedCategories,
           introduction: introduction as string,
           experience: (experience as string) || null,
-          status: 'pending', // 대기 상태
+          status: 'published', // 바로 게시
           created_at: new Date().toISOString(),
         });
 
       if (error) {
         console.error('Error submitting helper application:', error);
-        Alert.alert('오류', '신청서 제출 중 오류가 발생했습니다.');
+        
+        // 테이블이 존재하지 않는 경우
+        if (error.code === '42P01') {
+          Alert.alert(
+            '데이터베이스 오류', 
+            'helper_applications 테이블이 존재하지 않습니다.\n\n다음 파일을 Supabase SQL Editor에서 실행해주세요:\n- supabase_migrations/create_helper_applications_table.sql\n- supabase_migrations/add_rls_policies.sql'
+          );
+          return;
+        }
+        
+        // 기타 오류
+        Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다.\n오류 코드: ${error.code || 'Unknown'}`);
         return;
       }
 
       console.log('Helper application submitted successfully:', data);
 
       Alert.alert(
-        '신청 완료!', 
-        '도움 신청서가 성공적으로 제출되었습니다.\n검토 후 연락드리겠습니다.',
+        '등록 완료!', 
+        '도움 신청서가 성공적으로 등록되었습니다.\n이제 어르신들이 회원님의 프로필을 볼 수 있습니다.',
         [
           {
             text: '확인',

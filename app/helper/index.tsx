@@ -4,7 +4,7 @@ import { SafeAreaView } from '@/components/Themed';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { Categories } from '@/components/Categories';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Typography } from '@/components/Typography';
 import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/hooks/useAuth';
@@ -12,7 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 interface HelperApplication {
   id: string;
   name: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'published' | 'private';
   created_at: string;
   categories: string[];
 }
@@ -29,6 +29,15 @@ export default function HelperPage() {
     }
   }, [session]);
 
+  // 페이지에 포커스될 때마다 데이터 새로고침
+  useFocusEffect(
+    React.useCallback(() => {
+      if (session?.user) {
+        fetchApplication();
+      }
+    }, [session])
+  );
+
   const fetchApplication = async () => {
     if (!session?.user) return;
 
@@ -41,8 +50,24 @@ export default function HelperPage() {
         .limit(1)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
+        // 데이터가 없는 경우는 정상 (신청서가 없음)
+        if (error.code === 'PGRST116') {
+          console.log('신청서가 없습니다.');
+          setApplication(null);
+          return;
+        }
+        
+        // 테이블이 존재하지 않는 경우
+        if (error.code === '42P01') {
+          console.log('helper_applications 테이블이 존재하지 않습니다. Supabase에서 테이블을 생성해주세요.');
+          setApplication(null);
+          return;
+        }
+        
+        // 기타 에러는 로깅만 하고 계속 진행
         console.error('Error fetching application:', error);
+        setApplication(null);
         return;
       }
 
@@ -56,12 +81,10 @@ export default function HelperPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pending':
-        return '검토 중';
-      case 'approved':
-        return '승인됨';
-      case 'rejected':
-        return '거절됨';
+      case 'published':
+        return '게시됨';
+      case 'private':
+        return '비공개';
       default:
         return '알 수 없음';
     }
@@ -69,27 +92,23 @@ export default function HelperPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return '#f59e0b';
-      case 'approved':
-        return '#10b981';
-      case 'rejected':
-        return '#ef4444';
+      case 'published':
+        return '#21B500'; // 기존 primary 색상 (게시됨)
+      case 'private':
+        return '#6B7280'; // 기존 gray-500 (비공개)
       default:
-        return '#6b7280';
+        return '#6B7280';
     }
   };
 
   const handleRegister = () => {
-    if (application && application.status === 'pending') {
-      Alert.alert(
-        '신청서 검토 중',
-        '이미 제출된 신청서가 검토 중입니다. 결과를 기다려주세요.',
-        [{ text: '확인' }]
-      );
-      return;
+    if (application) {
+      // 이미 신청서가 있으면 수정 페이지로 이동
+      router.push('/helper/edit');
+    } else {
+      // 신청서가 없으면 새로 등록
+      router.push('/helper/register');
     }
-    router.push('/helper/register');
   };
 
   return (
@@ -110,7 +129,7 @@ export default function HelperPage() {
           <View style={styles.applicationStatus}>
             <View style={styles.statusHeader}>
               <Typography variant='label' weight='semibold'>
-                도우미 신청 상태
+                내 도우미 프로필
               </Typography>
               <View style={[styles.statusBadge, { backgroundColor: getStatusColor(application.status) }]}>
                 <Typography variant='caption' style={styles.statusText}>
@@ -119,8 +138,18 @@ export default function HelperPage() {
               </View>
             </View>
             <Typography variant='body' style={styles.applicationInfo}>
-              신청자: {application.name} • {new Date(application.created_at).toLocaleDateString()}
+              {application.name} • {application.categories.length}개 카테고리 • {new Date(application.created_at).toLocaleDateString()} 등록
             </Typography>
+            {application.status === 'published' && (
+              <Typography variant='caption' style={styles.statusHint}>
+                어르신들이 회원님의 프로필을 볼 수 있습니다.
+              </Typography>
+            )}
+            {application.status === 'private' && (
+              <Typography variant='caption' style={styles.statusHint}>
+                현재 비공개 상태입니다. 수정에서 공개로 변경할 수 있습니다.
+              </Typography>
+            )}
           </View>
         )}
 
@@ -159,7 +188,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   applicationStatus: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#F9FAFB', // 기존 gray-50
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
@@ -181,6 +210,12 @@ const styles = StyleSheet.create({
   },
   applicationInfo: {
     opacity: 0.7,
+    marginBottom: 8,
+  },
+  statusHint: {
+    color: '#6b7280',
+    fontSize: 12,
+    fontStyle: 'italic',
   },
   button: {
     marginBottom: 16,

@@ -7,17 +7,7 @@ import { Button } from "@/components/Button";
 import { useRouter } from "expo-router";
 import { ToggleChip } from "@/components/ToggleChip";
 import { BottomButton } from "@/components/BottomButton";
-
-// 도움 카테고리 데이터
-const HELP_CATEGORIES = [
-  { id: 'appliance', label: '가전제품 수리', icon: '🔧' },
-  { id: 'digital', label: '디지털 기기 도움', icon: '📱' },
-  { id: 'furniture', label: '가구 조립/수리', icon: '🪑' },
-  { id: 'clean', label: '청소/정리', icon: '🧹' },
-  { id: 'errands', label: '심부름/장보기', icon: '🛒' },
-  { id: 'companionship', label: '말벗/동행', icon: '👥' },
-  { id: 'etc', label: '기타', icon: '✨' },
-];
+import { HELP_CATEGORIES } from "@/constants/categories";
 
 export default function HelperRegisterPage() {
   const router = useRouter();

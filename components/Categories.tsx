@@ -1,44 +1,27 @@
 import { View, StyleSheet, Image } from "react-native";
 import { Typography } from '@/components/Typography';
+import { HELP_CATEGORIES } from '@/constants/categories';
 
-//TODO: 카테고리 서버에 추가하기 (supabase)
-const CATEGORY_TABLE = {
-  digital: {
-    order: 1,
-    image: require('@/assets/images/category/digital.png'),
-    title: '디지털\n도우미'
-  },
-  furniture: {
-    order: 2,
-    image: require('@/assets/images/category/furniture.png'),
-    title: '가구\n설치・수리'
-  },
-  appliance: {
-    order: 3,
-    image: require('@/assets/images/category/appliance.png'),
-    title: '가전제품'
-  },
-  clean: {
-    order: 4,
-    image: require('@/assets/images/category/clean.png'),
-    title: '청소'
-  },
-  companionship: {
-    order: 5,
-    image: require('@/assets/images/category/companionship.png'),
-    title: '말동무'
-  },
-  errands: {
-    order: 6,
-    image: require('@/assets/images/category/errands.png'),
-    title: '심부름'
-  },
-  etc: {
-    order: 7,
-    image: require('@/assets/images/category/etc.png'),
-    title: '기타'
-  },
-}
+// 카테고리별 이미지 매핑
+const CATEGORY_IMAGES = {
+  digital: require('@/assets/images/category/digital.png'),
+  furniture: require('@/assets/images/category/furniture.png'),
+  appliance: require('@/assets/images/category/appliance.png'),
+  clean: require('@/assets/images/category/clean.png'),
+  companionship: require('@/assets/images/category/companionship.png'),
+  errands: require('@/assets/images/category/errands.png'),
+  etc: require('@/assets/images/category/etc.png'),
+};
+
+// 카테고리 테이블 (상수에서 생성)
+const CATEGORY_TABLE = HELP_CATEGORIES.reduce((acc, category) => {
+  acc[category.id as keyof typeof CATEGORY_IMAGES] = {
+    order: category.order!,
+    image: CATEGORY_IMAGES[category.id as keyof typeof CATEGORY_IMAGES],
+    title: category.displayTitle!
+  };
+  return acc;
+}, {} as Record<keyof typeof CATEGORY_IMAGES, { order: number; image: any; title: string }>);
 
 type CategoryType = keyof typeof CATEGORY_TABLE;
 
