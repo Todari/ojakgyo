@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 40,
+    paddingBottom: 64,
     backgroundColor: 'white',
     // 그림자 효과 (선택사항)
     // shadowColor: '#000',

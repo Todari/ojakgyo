@@ -1,3 +1,4 @@
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "@/components/Themed";
 import { Header } from "@/components/Header";
 import { Typography } from "@/components/Typography";
@@ -148,12 +149,42 @@ export default function AuthPage() {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <Header left="back" />
-      <Typography variant="title" weight="bold">
-        로그인
-      </Typography>
-      <Button title="카카오로 로그인" onPress={handleKakaoLogin} />
+      
+      <View style={styles.content}>
+        <Typography variant="title" weight="bold" style={styles.title}>
+          로그인
+        </Typography>
+        
+        <Typography variant='body' style={styles.subtitle}>
+          카카오 계정으로 간편하게 로그인하세요
+        </Typography>
+
+        <View style={styles.buttonContainer}>
+          <Button title="카카오로 로그인" onPress={handleKakaoLogin} />
+        </View>
+      </View>
     </SafeAreaView>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  title: {
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  subtitle: {
+    marginBottom: 32,
+    opacity: 0.7,
+  },
+  buttonContainer: {
+    gap: 16,
+  },
+});

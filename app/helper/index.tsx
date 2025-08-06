@@ -101,6 +101,10 @@ export default function HelperPage() {
           도움이 필요하신 분들을 찾아볼까요?
         </Typography>
 
+        <Typography variant='body' style={styles.subtitle}>
+          어르신을 위한 맞춤 도움 서비스를 제공합니다
+        </Typography>
+
         {/* 신청 상태 표시 */}
         {application && (
           <View style={styles.applicationStatus}>
@@ -147,7 +151,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    marginBottom: 24,
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  subtitle: {
+    marginBottom: 32,
+    opacity: 0.7,
   },
   applicationStatus: {
     backgroundColor: '#f8f9fa',
