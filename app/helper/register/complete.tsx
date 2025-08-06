@@ -6,7 +6,7 @@ import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
 import { ToggleChip } from "@/components/ToggleChip";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { supabase } from "@/utils/supabase";
+// import { supabase } from "@/utils/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomButton } from "@/components/BottomButton";
 
@@ -39,7 +39,8 @@ export default function HelperCompletePage() {
     setIsSubmitting(true);
     
     try {
-      // helper_applications 테이블에 데이터 저장
+      // Supabase 데이터 저장 코드 (주석처리)
+      /*
       const { data, error } = await supabase
         .from('helper_applications')
         .insert({
@@ -58,6 +59,19 @@ export default function HelperCompletePage() {
         Alert.alert('오류', '신청서 제출 중 오류가 발생했습니다.');
         return;
       }
+      */
+
+      // 임시로 로컬에 저장 (실제로는 서버에 저장해야 함)
+      console.log('Helper application submitted:', {
+        user_id: session.user.id,
+        name: name as string,
+        age: parseInt(age as string),
+        categories: selectedCategories,
+        introduction: introduction as string,
+        experience: (experience as string) || null,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+      });
 
       Alert.alert(
         '신청 완료!', 

@@ -5,9 +5,29 @@ import { useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { SafeAreaView } from '@/components/Themed';
 import { Typography } from '@/components/Typography';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
   const router = useRouter();
+  const { user, logout, loading } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  // 로딩 중일 때는 로딩 화면 표시
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Header left='logo'/>
+        <View style={styles.content}>
+          <Typography variant='title' weight='bold' style={styles.title}>
+            로딩 중...
+          </Typography>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -15,7 +35,7 @@ export default function Home() {
       
       <View style={styles.content}>
         <Typography variant='title' weight='bold' style={styles.title}>
-          오작교에 오신 것을 환영합니다
+          {user ? `안녕하세요, ${user.nickname}님!` : '오작교에 오신 것을 환영합니다'}
         </Typography>
         
         <Typography variant='body' style={styles.subtitle}>
@@ -23,17 +43,33 @@ export default function Home() {
         </Typography>
 
         <View style={styles.buttonContainer}>
-          <Button
-            title="Children으로 이동"
-            onPress={() => router.push('/children')}
-            style={styles.button}
-          />
-          <Button
-            title="Helper로 이동"
-            variant="secondary"
-            onPress={() => router.push('/helper')}
-            style={styles.button}
-          />
+          {user ? (
+            <>
+              <Button
+                title="Children으로 이동"
+                onPress={() => router.push('/children')}
+                style={styles.button}
+              />
+              <Button
+                title="Helper로 이동"
+                variant="secondary"
+                onPress={() => router.push('/helper')}
+                style={styles.button}
+              />
+              <Button
+                title="로그아웃"
+                variant="secondary"
+                onPress={handleLogout}
+                style={styles.button}
+              />
+            </>
+          ) : (
+            <Button
+              title="로그인하기"
+              onPress={() => router.push('/auth')}
+              style={styles.button}
+            />
+          )}
         </View>
       </View>
     </SafeAreaView>

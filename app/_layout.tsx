@@ -30,28 +30,29 @@ export default function RootLayout() {
   }
 
   return (
-    // <AuthProvider>
+    <AuthProvider>
       <RootLayoutNav />
-    // </AuthProvider>
+    </AuthProvider>
   );
 }
 
 function RootLayoutNav() {
-  const { session, loading } = useAuth();
-  const router = useRouter();
-  const segments = useSegments();
+  // 자동 리다이렉션 비활성화 - 사용자가 직접 페이지 선택할 수 있도록
+  // const { session, loading } = useAuth();
+  // const router = useRouter();
+  // const segments = useSegments();
 
-  useEffect(() => {
-    if (loading) return;
+  // useEffect(() => {
+  //   if (loading) return;
 
-    const inAuthGroup = segments[0] === 'auth';
+  //   const inAuthGroup = segments[0] === 'auth';
 
-    if (session && !inAuthGroup) {
-      router.replace('/helper');
-    } else if (!session) {
-      router.replace('/auth');
-    }
-  }, [session, loading, segments]);
+  //   if (session && !inAuthGroup) {
+  //     router.replace('/helper');
+  //   } else if (!session) {
+  //     router.replace('/auth');
+  //   }
+  // }, [session, loading, segments]);
 
   return (
     <Stack>

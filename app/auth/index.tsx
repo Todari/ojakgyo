@@ -3,12 +3,54 @@ import { SafeAreaView } from "@/components/Themed";
 import { Header } from "@/components/Header";
 import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
-import { supabase } from "@/utils/supabase";
-import * as Linking from "expo-linking";
-import * as WebBrowser from "expo-web-browser";
+// import { supabase } from "@/utils/supabase";
+// import * as Linking from "expo-linking";
+// import * as WebBrowser from "expo-web-browser";
 import { Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { login, getProfile, KakaoOAuthToken, KakaoProfile } from '@react-native-seoul/kakao-login';
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AuthPage() {
+  const router = useRouter();
+  const { login: authLogin } = useAuth();
+
+  const handleKakaoLogin = async () => {
+    try {
+      console.log("=== Kakao Native Login Started ===");
+      
+      // 네이티브 카카오 로그인
+      const token: KakaoOAuthToken = await login();
+      console.log("Kakao login success:", token);
+
+      // 사용자 프로필 정보 가져오기
+      const profile: KakaoProfile = await getProfile();
+      console.log("Kakao profile:", profile);
+
+      // 사용자 정보를 Auth Context에 저장
+      const userInfo = {
+        id: profile.id.toString(), // number를 string으로 변환
+        nickname: profile.nickname,
+        profileImageUrl: profile.profileImageUrl,
+        email: profile.email,
+        provider: 'kakao' as const,
+      };
+
+      await authLogin(userInfo);
+
+      // 상태 업데이트가 완료될 때까지 잠시 대기
+      setTimeout(() => {
+        router.replace('/');
+      }, 100);
+
+    } catch (error) {
+      console.error("Kakao login error:", error);
+      Alert.alert("로그인 오류", "카카오 로그인 중 오류가 발생했습니다.");
+    }
+  };
+
+  // Supabase OAuth 코드 (주석처리)
+  /*
   const handleKakaoLogin = async () => {
     try {
       console.log("=== Kakao OAuth Login Started ===");
@@ -147,6 +189,7 @@ export default function AuthPage() {
       console.error("Error in saveUserToDatabase:", error);
     }
   };
+  */
 
   return (
     <SafeAreaView style={styles.container}>

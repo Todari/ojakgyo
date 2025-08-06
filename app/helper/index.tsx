@@ -6,8 +6,9 @@ import { Button } from '@/components/Button';
 import { Categories } from '@/components/Categories';
 import { useRouter } from 'expo-router';
 import { Typography } from '@/components/Typography';
-import { supabase } from '@/utils/supabase';
+// import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/utils/supabase';
 
 interface HelperApplication {
   id: string;
