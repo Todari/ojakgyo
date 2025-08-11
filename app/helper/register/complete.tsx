@@ -14,7 +14,7 @@ import { CATEGORY_MAP, getCategoryById } from "@/constants/categories";
 export default function HelperCompletePage() {
   const router = useRouter();
   const { session } = useAuth();
-  const { categories, name, age, introduction, experience } = useLocalSearchParams();
+  const { categories, name, age, introduction, experience, lat, lng } = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
@@ -28,50 +28,88 @@ export default function HelperCompletePage() {
 
     setIsSubmitting(true);
     
-    try {
-      // Supabase에 헬퍼 신청서 저장
-      const { data, error } = await supabase
-        .from('helper_applications')
-        .insert({
+      try {
+        // payload 구성 (lat/lng 포함 시도)
+        const payloadWithLocation: any = {
           user_id: session.user.supabaseId,
           name: name as string,
           age: parseInt(age as string),
           categories: selectedCategories,
           introduction: introduction as string,
           experience: (experience as string) || null,
-          status: 'published', // 바로 게시
+          status: 'published',
           created_at: new Date().toISOString(),
-        });
+        };
+        const latNum = lat ? parseFloat(lat as string) : NaN;
+        const lngNum = lng ? parseFloat(lng as string) : NaN;
+        if (Number.isFinite(latNum) && Number.isFinite(lngNum)) {
+          payloadWithLocation.lat = latNum;
+          payloadWithLocation.lng = lngNum;
+        }
 
-      if (error) {
-        console.error('Error submitting helper application:', error);
-        
-        // 테이블이 존재하지 않는 경우
-        if (error.code === '42P01') {
-          Alert.alert(
-            '데이터베이스 오류', 
-            'helper_applications 테이블이 존재하지 않습니다.\n\n다음 파일을 Supabase SQL Editor에서 실행해주세요:\n- supabase_migrations/create_helper_applications_table.sql\n- supabase_migrations/add_rls_policies.sql'
-          );
+        const { error: firstError } = await supabase
+          .from('helper_applications')
+          .insert(payloadWithLocation);
+
+        if (firstError) {
+          console.error('Error submitting helper application:', firstError);
+
+          // lat/lng 컬럼이 없을 때 재시도 (PGRST204: schema cache에 컬럼 없음)
+          if (firstError.code === 'PGRST204' || firstError.message?.includes("'lat' column")) {
+            const { error: retryError } = await supabase
+              .from('helper_applications')
+              .insert({
+                user_id: session.user.supabaseId,
+                name: name as string,
+                age: parseInt(age as string),
+                categories: selectedCategories,
+                introduction: introduction as string,
+                experience: (experience as string) || null,
+                status: 'published',
+                created_at: new Date().toISOString(),
+              });
+
+            if (retryError) {
+              if (retryError.code === '42P01') {
+                Alert.alert(
+                  '데이터베이스 오류',
+                  'helper_applications 테이블이 존재하지 않습니다.\n\n다음 파일을 Supabase SQL Editor에서 실행해주세요:\n- supabase_migrations/create_helper_applications_table.sql\n- supabase_migrations/add_rls_policies.sql'
+                );
+                return;
+              }
+              Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다.\n오류 코드: ${retryError.code || 'Unknown'}`);
+              return;
+            }
+
+            Alert.alert(
+              '등록 완료!',
+              '도움 신청서가 등록되었습니다.\n단, 위치 정보 컬럼(lat/lng)이 데이터베이스에 없어 위치는 저장되지 않았습니다.\n관리자에게 위치 컬럼 추가를 요청해주세요.',
+              [
+                { text: '확인', onPress: () => router.push('/helper') },
+              ]
+            );
+            return;
+          }
+
+          // 테이블이 존재하지 않는 경우
+          if (firstError.code === '42P01') {
+            Alert.alert(
+              '데이터베이스 오류',
+              'helper_applications 테이블이 존재하지 않습니다.\n\n다음 파일을 Supabase SQL Editor에서 실행해주세요:\n- supabase_migrations/create_helper_applications_table.sql\n- supabase_migrations/add_rls_policies.sql'
+            );
+            return;
+          }
+
+          // 기타 오류
+          Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다.\n오류 코드: ${firstError.code || 'Unknown'}`);
           return;
         }
-        
-        // 기타 오류
-        Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다.\n오류 코드: ${error.code || 'Unknown'}`);
-        return;
-      }
 
-      console.log('Helper application submitted successfully:', data);
+      console.log('Helper application submitted successfully');
 
-      Alert.alert(
-        '등록 완료!', 
-        '도움 신청서가 성공적으로 등록되었습니다.\n이제 어르신들이 회원님의 프로필을 볼 수 있습니다.',
-        [
-          {
-            text: '확인',
-            onPress: () => router.push('/helper'),
-          }
-        ]
-      );
+      Alert.alert('등록 완료!', '도움 신청서가 성공적으로 등록되었습니다.\n이제 어르신들이 회원님의 프로필을 볼 수 있습니다.', [
+        { text: '확인', onPress: () => router.push('/helper') },
+      ]);
 
     } catch (error) {
       console.error('Unexpected error:', error);

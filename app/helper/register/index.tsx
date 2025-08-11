@@ -4,13 +4,14 @@ import { SafeAreaView } from "@/components/Themed";
 import { Header } from "@/components/Header";
 import { Typography } from "@/components/Typography";
 import { Button } from "@/components/Button";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { ToggleChip } from "@/components/ToggleChip";
 import { BottomButton } from "@/components/BottomButton";
 import { HELP_CATEGORIES } from "@/constants/categories";
 
 export default function HelperRegisterPage() {
   const router = useRouter();
+  const { lat, lng } = useLocalSearchParams();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const handleCategoryToggle = (categoryId: string) => {
@@ -28,8 +29,14 @@ export default function HelperRegisterPage() {
     }
     
     // 선택된 카테고리를 쿼리 파라미터로 전달
-    const categoriesParam = selectedCategories.join(',');
-    router.push(`/helper/register/introduction?categories=${categoriesParam}`);
+    const params = new URLSearchParams({
+      categories: selectedCategories.join(','),
+    });
+    if (typeof lat === 'string' && typeof lng === 'string') {
+      params.set('lat', lat);
+      params.set('lng', lng);
+    }
+    router.push(`/helper/register/introduction?${params.toString()}`);
   };
 
   return (

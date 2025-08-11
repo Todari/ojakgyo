@@ -11,7 +11,7 @@ import { BottomButton } from "@/components/BottomButton";
 
 export default function HelperIntroductionPage() {
   const router = useRouter();
-  const { categories } = useLocalSearchParams();
+  const { categories, lat, lng } = useLocalSearchParams();
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [introduction, setIntroduction] = useState('');
@@ -40,6 +40,8 @@ export default function HelperIntroductionPage() {
       age: age.trim(),
       introduction: introduction.trim(),
       experience: experience.trim(),
+      lat: typeof lat === 'string' ? lat : '',
+      lng: typeof lng === 'string' ? lng : '',
     });
 
     router.push(`/helper/register/complete?${params.toString()}`);

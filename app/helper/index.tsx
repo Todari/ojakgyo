@@ -107,7 +107,7 @@ export default function HelperPage() {
       router.push('/helper/edit');
     } else {
       // 신청서가 없으면 새로 등록
-      router.push('/helper/register');
+      router.push('/helper/register/location');
     }
   };
 
