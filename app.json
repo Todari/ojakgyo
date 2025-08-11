@@ -15,7 +15,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.ojakgyo"
+      "bundleIdentifier": "com.anonymous.ojakgyo",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "이 앱은 지도를 표시하고 위치 기반 서비스를 위해 사용자의 위치 접근 권한이 필요합니다.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 백그라운드에서도 정확한 위치 기반 서비스를 위해 위치 접근 권한이 필요할 수 있습니다."
+      }
     },
     "android": {
       "adaptiveIcon": {

@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { Typography } from '@/components/Typography';
 import { BottomButton } from '@/components/BottomButton';
+import { router } from 'expo-router';
 
 export default function ChildrenPage() {
   return (
@@ -28,7 +29,7 @@ export default function ChildrenPage() {
           />
           <Button 
             title="내가 도움받기" 
-            onPress={() => {}} 
+            onPress={() => router.push('/request')}
             variant="secondary"
             style={styles.button}
           />

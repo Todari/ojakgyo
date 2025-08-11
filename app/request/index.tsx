@@ -1,49 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from '@/components/Themed';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { Categories } from '@/components/Categories';
-import { useRouter, useFocusEffect } from 'expo-router';
 import { Typography } from '@/components/Typography';
 import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/hooks/useAuth';
 
-interface HelperApplication {
+type RequestStatus = 'published' | 'private';
+
+interface HelpRequest {
   id: string;
-  name: string;
-  status: 'published' | 'private';
+  title: string;
+  status: RequestStatus;
   created_at: string;
   categories: string[];
 }
 
-export default function HelperPage() {
+export default function RequestPage() {
   const router = useRouter();
   const { session } = useAuth();
-  const [application, setApplication] = useState<HelperApplication | null>(null);
+
+  const [request, setRequest] = useState<HelpRequest | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (session?.user) {
-      fetchApplication();
+      fetchLatestRequest();
     }
   }, [session]);
 
-  // 페이지에 포커스될 때마다 데이터 새로고침
   useFocusEffect(
     React.useCallback(() => {
       if (session?.user) {
-        fetchApplication();
+        fetchLatestRequest();
       }
     }, [session])
   );
 
-  const fetchApplication = async () => {
+  const fetchLatestRequest = async () => {
     if (!session?.user) return;
 
     try {
       const { data, error } = await supabase
-        .from('helper_applications')
+        .from('help_requests')
         .select('*')
         .eq('user_id', session.user.supabaseId)
         .order('created_at', { ascending: false })
@@ -51,35 +53,31 @@ export default function HelperPage() {
         .single();
 
       if (error) {
-        // 데이터가 없는 경우는 정상 (신청서가 없음)
-        if (error.code === 'PGRST116') {
-          console.log('신청서가 없습니다.');
-          setApplication(null);
+        // 데이터가 없는 경우 (요청서가 없음)
+        if ((error as any).code === 'PGRST116') {
+          setRequest(null);
           return;
         }
-        
         // 테이블이 존재하지 않는 경우
-        if (error.code === '42P01') {
-          console.log('helper_applications 테이블이 존재하지 않습니다. Supabase에서 테이블을 생성해주세요.');
-          setApplication(null);
+        if ((error as any).code === '42P01') {
+          console.log('help_requests 테이블이 존재하지 않습니다. Supabase에서 테이블을 생성해주세요.');
+          setRequest(null);
           return;
         }
-        
-        // 기타 에러는 로깅만 하고 계속 진행
-        console.error('Error fetching application:', error);
-        setApplication(null);
+        console.error('Error fetching help request:', error);
+        setRequest(null);
         return;
       }
 
-      setApplication(data);
-    } catch (error) {
-      console.error('Unexpected error:', error);
+      setRequest(data as HelpRequest);
+    } catch (e) {
+      console.error('Unexpected error:', e);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: RequestStatus) => {
     switch (status) {
       case 'published':
         return '게시됨';
@@ -90,85 +88,80 @@ export default function HelperPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: RequestStatus) => {
     switch (status) {
       case 'published':
-        return '#21B500'; // 기존 primary 색상 (게시됨)
+        return '#21B500';
       case 'private':
-        return '#6B7280'; // 기존 gray-500 (비공개)
+        return '#6B7280';
       default:
         return '#6B7280';
     }
   };
 
   const handleRegister = () => {
-    if (application) {
-      // 이미 신청서가 있으면 수정 페이지로 이동
-      router.push('/helper/edit');
+    if (request) {
+      router.push('/request/edit');
     } else {
-      // 신청서가 없으면 새로 등록
-      router.push('/helper/register');
+      router.push('/request/register');
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Header left='back' />
-      
+
       <View style={styles.content}>
         <Typography variant='title' weight='bold' style={styles.title}>
-          도움이 필요하신 분들을 찾아볼까요?
+          어떤 도움이 필요하신가요?
         </Typography>
 
         <Typography variant='body' style={styles.subtitle}>
-          어르신을 위한 맞춤 도움 서비스를 제공합니다
+          원하는 도움을 요청하거나, 주변의 도우미를 찾아보세요
         </Typography>
 
-        <Button 
-          title="지도에서 어르신 찾기" 
+        <Button
+          title="지도에서 도우미 찾기"
           onPress={() => router.push('/helper/map')}
           style={styles.button}
         />
-        
-        <Categories />
-        
 
-        {/* 신청 상태 표시 */}
-        {application && (
-          <View style={styles.applicationStatus}>
+        <Categories />
+
+        {request && (
+          <View style={styles.requestStatus}>
             <View style={styles.statusHeader}>
               <Typography variant='label' weight='semibold'>
-                내 도우미 프로필
+                내 도움 요청
               </Typography>
-              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(application.status) }]}>
+              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(request.status) }]}>
                 <Typography variant='caption' style={styles.statusText}>
-                  {getStatusText(application.status)}
+                  {getStatusText(request.status)}
                 </Typography>
               </View>
             </View>
-            <Typography variant='body' style={styles.applicationInfo}>
-              {application.name} • {application.categories.length}개 카테고리 • {new Date(application.created_at).toLocaleDateString()} 등록
+            <Typography variant='body' style={styles.requestInfo}>
+              {request.title} • {request.categories?.length || 0}개 카테고리 • {new Date(request.created_at).toLocaleDateString()} 등록
             </Typography>
-            {application.status === 'published' && (
+            {request.status === 'published' && (
               <Typography variant='caption' style={styles.statusHint}>
-                어르신들이 회원님의 프로필을 볼 수 있습니다.
+                도우미들이 회원님의 요청을 볼 수 있습니다.
               </Typography>
             )}
-            {application.status === 'private' && (
+            {request.status === 'private' && (
               <Typography variant='caption' style={styles.statusHint}>
                 현재 비공개 상태입니다. 수정에서 공개로 변경할 수 있습니다.
               </Typography>
             )}
           </View>
         )}
-        
+
         <Button
-          title={application ? "신청서 수정하기" : "직접 도우미 등록하기"}
+          title={request ? '요청서 수정하기' : '도움 요청 등록하기'}
           onPress={handleRegister}
-          variant="secondary"
+          variant='secondary'
           style={styles.button}
         />
-
       </View>
     </SafeAreaView>
   );
@@ -189,8 +182,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     opacity: 0.7,
   },
-  applicationStatus: {
-    backgroundColor: '#F9FAFB', // 기존 gray-50
+  requestStatus: {
+    backgroundColor: '#F9FAFB',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     padding: 16,
@@ -212,7 +205,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
-  applicationInfo: {
+  requestInfo: {
     opacity: 0.7,
     marginBottom: 8,
   },
@@ -225,3 +218,5 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 });
+
+
