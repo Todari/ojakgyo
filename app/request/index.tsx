@@ -122,7 +122,7 @@ export default function RequestPage() {
 
         <Button
           title="지도에서 도우미 찾기"
-          onPress={() => router.push('/helper/map')}
+          onPress={() => router.push('/request/map')}
           style={styles.button}
         />
 
