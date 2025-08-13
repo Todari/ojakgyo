@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function RequestConfirmPage() {
   const router = useRouter();
   const { session } = useAuth();
-  const { categories, details } = useLocalSearchParams();
+  const { categories, details, lat, lng } = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
@@ -31,10 +31,14 @@ export default function RequestConfirmPage() {
         .from('help_requests')
         .insert({
           user_id: session.user.supabaseId,
+          name: session.user?.nickname || session.user?.name || null,
           categories: selectedCategories,
           details: details as string,
           status: 'published',
           created_at: new Date().toISOString(),
+          ...(typeof lat === 'string' && typeof lng === 'string'
+            ? { lat: parseFloat(lat), lng: parseFloat(lng) }
+            : {}),
         });
 
       if (error) {

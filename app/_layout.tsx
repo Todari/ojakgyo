@@ -63,7 +63,9 @@ function RootLayoutNav() {
       <Stack.Screen name="helper/index" options={{ headerShown: false }} />
       <Stack.Screen name="helper/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
+      <Stack.Screen name="request/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="request/map/index" options={{ headerShown: false }} />
+      <Stack.Screen name="request/register/location" options={{ headerShown: false }} />
       <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />
       <Stack.Screen name="helper/register/introduction" options={{ headerShown: false }} />
       <Stack.Screen name="helper/register/complete" options={{ headerShown: false }} />

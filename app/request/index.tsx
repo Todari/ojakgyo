@@ -103,7 +103,7 @@ export default function RequestPage() {
     if (request) {
       router.push('/request/edit');
     } else {
-      router.push('/request/register');
+      router.push('/request/register/location');
     }
   };
 

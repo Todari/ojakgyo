@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, ScrollView, View, Alert } from "react-native";
 import { SafeAreaView } from "@/components/Themed";
 import { Header } from "@/components/Header";
@@ -7,23 +7,22 @@ import { Button } from "@/components/Button";
 import { TextArea } from "@/components/TextArea";
 import { Input } from "@/components/Input";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import { useAuth } from '@/hooks/useAuth';
 import { BottomButton } from "@/components/BottomButton";
 
 export default function HelperIntroductionPage() {
   const router = useRouter();
   const { categories, lat, lng } = useLocalSearchParams();
-  const [name, setName] = useState('');
+  const { session } = useAuth();
   const [age, setAge] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [experience, setExperience] = useState('');
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
 
+  // 이름은 입력받지 않고 세션 유저 닉네임을 최종 제출 단계에서 사용하므로 여기서는 처리하지 않음
+
   const handleNext = () => {
-    if (!name.trim()) {
-      Alert.alert('알림', '이름을 입력해주세요.');
-      return;
-    }
     if (!age.trim()) {
       Alert.alert('알림', '나이를 입력해주세요.');
       return;
@@ -36,7 +35,6 @@ export default function HelperIntroductionPage() {
     // 데이터를 쿼리 파라미터로 전달
     const params = new URLSearchParams({
       categories: selectedCategories.join(','),
-      name: name.trim(),
       age: age.trim(),
       introduction: introduction.trim(),
       experience: experience.trim(),
@@ -61,17 +59,6 @@ export default function HelperIntroductionPage() {
         </Typography>
 
         <View style={styles.formContainer}>
-          <View style={styles.inputGroup}>
-            <Typography variant='body' weight='medium' style={styles.label}>
-              이름 *
-            </Typography>
-            <Input
-              placeholder="실명을 입력해주세요"
-              value={name}
-              onChangeText={setName}
-            />
-          </View>
-
           <View style={styles.inputGroup}>
             <Typography variant='body' weight='medium' style={styles.label}>
               나이 *
@@ -121,7 +108,7 @@ export default function HelperIntroductionPage() {
       <BottomButton
         title="완료하기"
         onPress={handleNext}
-        disabled={!name.trim() || !age.trim() || !introduction.trim()}
+        disabled={!age.trim() || !introduction.trim()}
       />
     </SafeAreaView>
   );

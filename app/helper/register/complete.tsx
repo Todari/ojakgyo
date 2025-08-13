@@ -32,7 +32,7 @@ export default function HelperCompletePage() {
         // payload 구성 (lat/lng 포함 시도)
         const payloadWithLocation: any = {
           user_id: session.user.supabaseId,
-          name: name as string,
+          name: (name as string) || (session.user?.nickname as string) || (session.user?.name as string) || '이름 미설정',
           age: parseInt(age as string),
           categories: selectedCategories,
           introduction: introduction as string,
@@ -60,7 +60,7 @@ export default function HelperCompletePage() {
               .from('helper_applications')
               .insert({
                 user_id: session.user.supabaseId,
-                name: name as string,
+                name: (name as string) || (session.user?.nickname as string) || (session.user?.name as string) || '이름 미설정',
                 age: parseInt(age as string),
                 categories: selectedCategories,
                 introduction: introduction as string,
@@ -162,10 +162,10 @@ export default function HelperCompletePage() {
               개인 정보
             </Typography>
             <View style={styles.infoContainer}>
-              <View style={styles.infoRow}>
+              {/* <View style={styles.infoRow}>
                 <Typography variant='body' weight='medium'>이름:</Typography>
                 <Typography variant='body'>{name}</Typography>
-              </View>
+              </View> */}
               <View style={styles.infoRow}>
                 <Typography variant='body' weight='medium'>나이:</Typography>
                 <Typography variant='body'>{age}세</Typography>

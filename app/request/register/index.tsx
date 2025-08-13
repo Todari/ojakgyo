@@ -6,10 +6,11 @@ import { Typography } from '@/components/Typography';
 import { ToggleChip } from '@/components/ToggleChip';
 import { BottomButton } from '@/components/BottomButton';
 import { HELP_CATEGORIES } from '@/constants/categories';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function RequestRegisterPage() {
   const router = useRouter();
+  const { lat, lng } = useLocalSearchParams();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const handleCategoryToggle = (categoryId: string) => {
@@ -19,14 +20,21 @@ export default function RequestRegisterPage() {
         : [...prev, categoryId]
     );
   };
-
   const handleNext = () => {
     if (selectedCategories.length === 0) {
       alert('최소 하나의 카테고리를 선택해주세요.');
       return;
     }
-    const categoriesParam = selectedCategories.join(',');
-    router.push(`/request/register/details?categories=${categoriesParam}`);
+    
+    // 선택된 카테고리를 쿼리 파라미터로 전달
+    const params = new URLSearchParams({
+      categories: selectedCategories.join(','),
+    });
+    if (typeof lat === 'string' && typeof lng === 'string') {
+      params.set('lat', lat);
+      params.set('lng', lng);
+    }
+    router.push(`/request/register/details?${params.toString()}`);
   };
 
   return (

@@ -16,7 +16,6 @@ import { HELP_CATEGORIES } from '@/constants/categories';
 
 interface HelperApplication {
   id: string;
-  name: string;
   age: number;
   categories: string[];
   introduction: string;
@@ -33,7 +32,6 @@ export default function HelperEditPage() {
 
   // 폼 상태
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [name, setName] = useState('');
   const [age, setAge] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [experience, setExperience] = useState('');
@@ -85,7 +83,6 @@ export default function HelperEditPage() {
       if (data) {
         setApplication(data);
         setSelectedCategories(data.categories || []);
-        setName(data.name || '');
         setAge(data.age?.toString() || '');
         setIntroduction(data.introduction || '');
         setExperience(data.experience || '');
@@ -117,10 +114,6 @@ export default function HelperEditPage() {
       return;
     }
 
-    if (!name.trim()) {
-      Alert.alert('필수 입력', '이름을 입력해주세요.');
-      return;
-    }
 
     if (!age.trim() || isNaN(parseInt(age))) {
       Alert.alert('필수 입력', '올바른 나이를 입력해주세요.');
@@ -138,7 +131,6 @@ export default function HelperEditPage() {
       const { error } = await supabase
         .from('helper_applications')
         .update({
-          name: name.trim(),
           age: parseInt(age),
           categories: selectedCategories,
           introduction: introduction.trim(),
@@ -294,13 +286,6 @@ export default function HelperEditPage() {
           <Typography variant='body' weight='semibold' style={styles.sectionTitle}>
             개인 정보
           </Typography>
-          <Input
-            label="이름 *"
-            value={name}
-            onChangeText={setName}
-            placeholder="이름을 입력해주세요"
-            style={styles.input}
-          />
           <Input
             label="나이 *"
             value={age}

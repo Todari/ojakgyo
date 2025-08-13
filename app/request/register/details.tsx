@@ -9,7 +9,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function RequestDetailsPage() {
   const router = useRouter();
-  const { categories } = useLocalSearchParams();
+  const { categories, lat, lng } = useLocalSearchParams();
   const [details, setDetails] = useState('');
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
@@ -24,6 +24,10 @@ export default function RequestDetailsPage() {
       categories: selectedCategories.join(','),
       details: details.trim(),
     });
+    if (typeof lat === 'string' && typeof lng === 'string') {
+      params.set('lat', lat);
+      params.set('lng', lng);
+    }
 
     router.push(`/request/register/confirm?${params.toString()}`);
   };
