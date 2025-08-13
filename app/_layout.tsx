@@ -57,22 +57,24 @@ function RootLayoutNav() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="chat/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="auth/index" options={{ headerShown: false }} />
       <Stack.Screen name="auth/callback/kakao/index" options={{ headerShown: false }} />
       <Stack.Screen name="helper/index" options={{ headerShown: false }} />
+      <Stack.Screen name="helper/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
       <Stack.Screen name="request/map/index" options={{ headerShown: false }} />
       <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />
       <Stack.Screen name="helper/register/introduction" options={{ headerShown: false }} />
       <Stack.Screen name="helper/register/complete" options={{ headerShown: false }} />
-            <Stack.Screen name="helper/register/location" options={{ headerShown: false }} />
-              <Stack.Screen name="helper/edit/index" options={{ headerShown: false }} />
-            <Stack.Screen name="children/index" options={{ headerShown: false }} />
-            <Stack.Screen name="request/index" options={{ headerShown: false }} />
-            <Stack.Screen name="request/register/index" options={{ headerShown: false }} />
-            <Stack.Screen name="request/register/details" options={{ headerShown: false }} />
-            <Stack.Screen name="request/register/confirm" options={{ headerShown: false }} />
-            <Stack.Screen name="request/edit/index" options={{ headerShown: false }} />
+      <Stack.Screen name="helper/register/location" options={{ headerShown: false }} />
+      <Stack.Screen name="helper/edit/index" options={{ headerShown: false }} />
+      <Stack.Screen name="children/index" options={{ headerShown: false }} />
+      <Stack.Screen name="request/index" options={{ headerShown: false }} />
+      <Stack.Screen name="request/register/index" options={{ headerShown: false }} />
+      <Stack.Screen name="request/register/details" options={{ headerShown: false }} />
+      <Stack.Screen name="request/register/confirm" options={{ headerShown: false }} />
+      <Stack.Screen name="request/edit/index" options={{ headerShown: false }} />
     </Stack>
   );
 }

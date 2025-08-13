@@ -10,7 +10,7 @@ import { supabase } from '@/utils/supabase';
 import { useRouter } from 'expo-router';
 
 type HelperApplicationRow = {
-  id: number;
+  id: string;
   name: string;
   lat: number | null;
   lng: number | null;
@@ -29,7 +29,7 @@ export default function RequestMapPage() {
   const [helpers, setHelpers] = useState<HelperApplicationRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [positions, setPositions] = useState<Record<number, ScreenPos>>({});
+  const [positions, setPositions] = useState<Record<string, ScreenPos>>({});
 
   useEffect(() => {
     (async () => {
@@ -88,7 +88,7 @@ export default function RequestMapPage() {
           return [row.id, mapped] as const;
         })
       );
-      const next: Record<number, ScreenPos> = {};
+      const next: Record<string, ScreenPos> = {};
       entries.forEach(([id, res]) => {
         next[id] = res;
       });
@@ -137,7 +137,7 @@ export default function RequestMapPage() {
             <TouchableOpacity
               key={row.id}
               activeOpacity={0.9}
-              onPress={() => router.push('/helper')}
+              onPress={() => router.push(`/helper/${row.id}`)}
               style={[
                 styles.card,
                 { left, top, width: CARD_WIDTH, height: CARD_HEIGHT },
