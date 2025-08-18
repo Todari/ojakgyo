@@ -8,7 +8,6 @@ type User = {
   kakaoId: string;
   nickname: string;
   profileImageUrl?: string;
-  email?: string;
   provider: 'kakao';
   // Supabase 정보
   supabaseId?: number;
@@ -22,7 +21,7 @@ type AuthContextType = {
   user: User | null;
   session: any | null;
   loading: boolean;
-  login: (kakaoId: string, nickname: string, profileImageUrl?: string, email?: string) => Promise<void>;
+  login: (kakaoId: string, nickname: string, profileImageUrl?: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -42,7 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   // 카카오 로그인 + Supabase 연동 함수
-  const login = async (kakaoId: string, nickname: string, profileImageUrl?: string, email?: string) => {
+  const login = async (kakaoId: string, nickname: string, profileImageUrl?: string) => {
     try {
       console.log('=== Supabase 연동 시작 ===');
       console.log('카카오 ID:', kakaoId);
@@ -115,7 +114,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         kakaoId: supabaseUser.kakao_id, // DB의 kakao_id 필드 사용
         nickname: supabaseUser.name || nickname, // DB의 name 필드 우선 사용, 없으면 카카오 닉네임
         profileImageUrl: supabaseUser.thumbnail_url || profileImageUrl, // DB 또는 카카오 이미지
-        email: email,
         provider: 'kakao',
         supabaseId: supabaseUser.id,
         lat: supabaseUser.lat,

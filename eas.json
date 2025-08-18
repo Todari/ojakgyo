@@ -16,6 +16,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      // "ios": {
+      //   "appleId": "hotjingx2@gmail.com",
+      //   "ascAppId": "placeholder",
+      //   "appleTeamId": "3FQQ7TFWF7"
+      // }
+    }
   }
 }

@@ -70,20 +70,26 @@ export default function KakaoCallbackPage() {
 
     const saveUserToDatabase = async (user: any) => {
       try {
-        // 사용자 정보를 profiles 테이블에 저장/업데이트
+        // 사용자 정보를 users 테이블에 저장/업데이트 (이메일 제외)
         const { data, error } = await supabase
-          .from('profiles')
+          .from('users')
           .upsert({
-            id: user.id,
-            email: user.email,
+            // Supabase auth user.id를 사용하여 고유 식별자로 설정
+            supabase_user_id: user.id,
+            // email 필드 제거 - 카카오에서 제공하지 않으므로 저장하지 않음
             provider: 'kakao',
             updated_at: new Date().toISOString(),
             // OAuth에서 받은 사용자 메타데이터
-            nickname: user.user_metadata?.nickname || user.user_metadata?.name,
-            profile_image: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+            name: user.user_metadata?.nickname || user.user_metadata?.name,
+            thumbnail_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
             kakao_id: user.user_metadata?.sub || user.user_metadata?.id,
+            // 기본 위치 설정 (서울)
+            lat: 37.5519,
+            lng: 126.9918,
+            last_login_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
           }, {
-            onConflict: 'id'
+            onConflict: 'kakao_id'
           });
 
         if (error) {

@@ -13,8 +13,6 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          lat: number
-          lng: number
           name: string
           profile_url: string
           updated_at: string

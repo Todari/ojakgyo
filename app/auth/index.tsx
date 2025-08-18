@@ -6,16 +6,35 @@ import { Button } from "@/components/Button";
 // import { supabase } from "@/utils/supabase";
 // import * as Linking from "expo-linking";
 // import * as WebBrowser from "expo-web-browser";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { login, getProfile, KakaoOAuthToken, KakaoProfile } from '@react-native-seoul/kakao-login';
 import { useAuth } from "@/hooks/useAuth";
+import Constants from 'expo-constants';
+import { supabase } from "@/utils/supabase";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
+import * as AuthSession from 'expo-auth-session';
+import * as Crypto from 'expo-crypto';
 
 export default function AuthPage() {
   const router = useRouter();
   const { login: authLogin } = useAuth();
 
+  // Expo Go인지 Development Build인지 감지
+  const isExpoGo = Constants.executionEnvironment === 'storeClient';
+
   const handleKakaoLogin = async () => {
+    if (isExpoGo) {
+      // Expo Go에서는 최신 웹 OAuth 사용
+      await handleWebOAuthLogin();
+    } else {
+      // Development Build에서는 네이티브 로그인 사용
+      await handleNativeLogin();
+    }
+  };
+
+  const handleNativeLogin = async () => {
     try {
       console.log("=== Kakao Native Login Started ===");
       
@@ -27,12 +46,12 @@ export default function AuthPage() {
       const profile: KakaoProfile = await getProfile();
       console.log("Kakao profile:", profile);
 
-      // Supabase 연동 로그인/회원가입
+      // Supabase 연동 로그인/회원가입 (이메일 제외)
       await authLogin(
         profile.id.toString(), // 카카오 ID
         profile.nickname, // 닉네임
-        profile.profileImageUrl, // 프로필 이미지
-        profile.email // 이메일
+        profile.profileImageUrl // 프로필 이미지
+        // email 파라미터 제거 - 카카오에서 이메일 권한을 요청하지 않음
       );
 
       // 상태 업데이트가 완료될 때까지 잠시 대기
@@ -44,26 +63,40 @@ export default function AuthPage() {
     }
   };
 
-  // Supabase OAuth 코드 (주석처리)
-  /*
-  const handleKakaoLogin = async () => {
+  const handleWebOAuthLogin = async () => {
     try {
-      console.log("=== Kakao OAuth Login Started ===");
+      console.log("=== Kakao OAuth Login Started (Modern AuthSession Method) ===");
+      
+      // 최신 expo-auth-session 방법으로 리다이렉트 URI 생성
+      let redirectUri;
+      
+      if (isExpoGo) {
+        // Expo Go: 자동으로 프록시 URI 생성 (정확한 IP와 포트 사용)
+        redirectUri = AuthSession.makeRedirectUri({
+          path: 'auth/callback/kakao'
+        });
+      } else {
+        // Development Build: 커스텀 스킴 사용
+        redirectUri = AuthSession.makeRedirectUri({
+          scheme: 'ojakgyo',
+          path: 'auth/callback/kakao'
+        });
+      }
+      
+      console.log("🔍 Generated redirect URI (AuthSession):", redirectUri);
+      console.log("🔍 Current execution environment:", Constants.executionEnvironment);
+      console.log("🔍 Is Expo Go:", isExpoGo);
       
       // Supabase 설정 확인
       console.log("Supabase URL:", process.env.EXPO_PUBLIC_SUPABASE_URL);
       console.log("Supabase Anon Key exists:", !!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY);
       
-      // 공식 문서에 따른 OAuth 구현
-      // https://supabase.com/docs/guides/auth/social-login/auth-kakao
+      // 최신 OAuth 구현 방법
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'kakao',
         options: {
-          redirectTo: Linking.createURL("auth/callback/kakao"),
-          queryParams: {
-            // 이메일 권한 추가 (Supabase 요구사항)
-            scope: 'account_email profile_nickname profile_image'
-          }
+          redirectTo: redirectUri
+          // queryParams 제거 - 카카오 기본 스코프만 사용
         },
       });
 
@@ -78,11 +111,17 @@ export default function AuthPage() {
 
       if (data.url) {
         console.log("Supabase OAuth URL:", data.url);
+        console.log("🔍 Full OAuth URL breakdown:");
+        console.log("  - Base URL:", data.url.split('?')[0]);
+        console.log("  - Query params:", data.url.split('?')[1]);
         
         // React Native에서는 WebBrowser를 사용하여 OAuth 처리
+        console.log("🚀 Opening OAuth URL:", data.url);
+        console.log("🚀 Using redirect URI:", redirectUri);
+          
         const result = await WebBrowser.openAuthSessionAsync(
           data.url, 
-          Linking.createURL("auth/callback/kakao")
+          redirectUri
         );
         
         console.log("WebBrowser result:", result);
@@ -103,16 +142,6 @@ export default function AuthPage() {
           
           if (error) {
             console.error("OAuth error:", error, errorDescription);
-            
-            // 이메일 오류가 발생하면 사용자에게 알림
-            if (error === 'server_error' && errorDescription?.includes('email')) {
-              Alert.alert(
-                "로그인 오류", 
-                "카카오에서 이메일 정보를 가져올 수 없습니다. 카카오 개발자 포털에서 이메일 권한을 활성화하거나, 다른 방법으로 로그인해주세요."
-              );
-              return;
-            }
-            
             Alert.alert("로그인 오류", `인증 과정에서 오류가 발생했습니다: ${errorDescription || error}`);
             return;
           }
@@ -134,6 +163,7 @@ export default function AuthPage() {
               await saveUserToDatabase(sessionData.session.user);
               
               Alert.alert("로그인 성공", "카카오 로그인이 완료되었습니다.");
+              router.replace('/');
             } else {
               console.log("No session created");
               Alert.alert("로그인 오류", "세션을 생성할 수 없습니다.");
@@ -159,20 +189,26 @@ export default function AuthPage() {
 
   const saveUserToDatabase = async (user: any) => {
     try {
-      // 사용자 정보를 profiles 테이블에 저장/업데이트
+      // 사용자 정보를 users 테이블에 저장/업데이트 (이메일 제외)
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .upsert({
-          id: user.id,
-          email: user.email,
+          // Supabase auth user.id를 사용하여 고유 식별자로 설정
+          supabase_user_id: user.id,
+          // email 필드 제거 - 카카오에서 제공하지 않으므로 저장하지 않음
           provider: 'kakao',
           updated_at: new Date().toISOString(),
           // OAuth에서 받은 사용자 메타데이터
-          nickname: user.user_metadata?.nickname || user.user_metadata?.name,
-          profile_image: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+          name: user.user_metadata?.nickname || user.user_metadata?.name,
+          thumbnail_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
           kakao_id: user.user_metadata?.sub || user.user_metadata?.id,
+          // 기본 위치 설정 (서울)
+          lat: 37.5519,
+          lng: 126.9918,
+          last_login_at: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         }, {
-          onConflict: 'id'
+          onConflict: 'kakao_id'
         });
 
       if (error) {
@@ -184,7 +220,8 @@ export default function AuthPage() {
       console.error("Error in saveUserToDatabase:", error);
     }
   };
-  */
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -199,8 +236,15 @@ export default function AuthPage() {
           카카오 계정으로 간편하게 로그인하세요
         </Typography>
 
+        <Typography variant='caption' style={styles.platformInfo}>
+          {isExpoGo ? '🌐 웹 OAuth 방식 (최신)' : '📱 네이티브 앱 방식'}
+        </Typography>
+
         <View style={styles.buttonContainer}>
-          <Button title="카카오로 로그인" onPress={handleKakaoLogin} />
+          <Button 
+            title="카카오로 로그인" 
+            onPress={handleKakaoLogin} 
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -219,8 +263,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    marginBottom: 32,
+    marginBottom: 16,
     opacity: 0.7,
+  },
+  platformInfo: {
+    marginBottom: 32,
+    opacity: 0.6,
+    textAlign: 'center',
   },
   buttonContainer: {
     gap: 16,
