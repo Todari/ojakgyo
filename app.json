@@ -71,12 +71,6 @@
           }
         }
       ],
-      [
-        "@react-native-seoul/kakao-login",
-        {
-          "kakaoAppKey": "${EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY}"
-        }
-      ],
       "expo-router"
     ],
     "experiments": {

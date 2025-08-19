@@ -8,7 +8,6 @@ import { Button } from "@/components/Button";
 // import * as WebBrowser from "expo-web-browser";
 import { Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
-import { login, getProfile, KakaoOAuthToken, KakaoProfile } from '@react-native-seoul/kakao-login';
 import { useAuth } from "@/hooks/useAuth";
 import Constants from 'expo-constants';
 import { supabase } from "@/utils/supabase";
@@ -21,66 +20,29 @@ export default function AuthPage() {
   const router = useRouter();
   const { login: authLogin } = useAuth();
 
-  // Expo Go인지 Development Build인지 감지
-  const isExpoGo = Constants.executionEnvironment === 'storeClient';
-
+  // 항상 OAuth 방식 사용 (네이티브 SDK 제거)
   const handleKakaoLogin = async () => {
-    if (isExpoGo) {
-      // Expo Go에서는 최신 웹 OAuth 사용
-      await handleWebOAuthLogin();
-    } else {
-      // Development Build에서는 네이티브 로그인 사용
-      await handleNativeLogin();
-    }
-  };
-
-  const handleNativeLogin = async () => {
-    try {
-      console.log("=== Kakao Native Login Started ===");
-      
-      // 네이티브 카카오 로그인
-      const token: KakaoOAuthToken = await login();
-      console.log("Kakao login success:", token);
-
-      // 사용자 프로필 정보 가져오기
-      const profile: KakaoProfile = await getProfile();
-      console.log("Kakao profile:", profile);
-
-      // Supabase 연동 로그인/회원가입 (이메일 제외)
-      await authLogin(
-        profile.id.toString(), // 카카오 ID
-        profile.nickname, // 닉네임
-        profile.profileImageUrl // 프로필 이미지
-        // email 파라미터 제거 - 카카오에서 이메일 권한을 요청하지 않음
-      );
-
-      // 상태 업데이트가 완료될 때까지 잠시 대기
-      router.replace('/');
-
-    } catch (error) {
-      console.error("Kakao login error:", error);
-      Alert.alert("로그인 오류", "카카오 로그인 중 오류가 발생했습니다.");
-    }
+    await handleWebOAuthLogin();
   };
 
   const handleWebOAuthLogin = async () => {
     try {
-      console.log("=== Kakao OAuth Login Started (Modern AuthSession Method) ===");
+      console.log("=== Kakao OAuth Login Started (OAuth Only Method) ===");
       
-      // 최신 expo-auth-session 방법으로 리다이렉트 URI 생성
+      // Expo Go 감지
+      const isExpoGo = Constants.executionEnvironment === 'storeClient';
+      
+      // 리다이렉트 URI 생성
       let redirectUri;
       
       if (isExpoGo) {
-        // Expo Go: 자동으로 프록시 URI 생성 (정확한 IP와 포트 사용)
+        // Expo Go: 자동으로 프록시 URI 생성
         redirectUri = AuthSession.makeRedirectUri({
           path: 'auth/callback/kakao'
         });
       } else {
-        // Development Build: 커스텀 스킴 사용
-        redirectUri = AuthSession.makeRedirectUri({
-          scheme: 'ojakgyo',
-          path: 'auth/callback/kakao'
-        });
+        // Development Build & TestFlight: Supabase 기본 콜백 사용 (테스트)
+        redirectUri = `https://oecdktjwwbqtoewyabgr.supabase.co/auth/v1/callback`;
       }
       
       console.log("🔍 Generated redirect URI (AuthSession):", redirectUri);
@@ -237,7 +199,7 @@ export default function AuthPage() {
         </Typography>
 
         <Typography variant='caption' style={styles.platformInfo}>
-          {isExpoGo ? '🌐 웹 OAuth 방식 (최신)' : '📱 네이티브 앱 방식'}
+          🌐 OAuth 방식 (모든 환경 지원)
         </Typography>
 
         <View style={styles.buttonContainer}>

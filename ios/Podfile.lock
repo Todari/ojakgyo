@@ -1,5 +1,4 @@
 PODS:
-  - Alamofire (5.9.1)
   - boost (1.84.0)
   - DoubleConversion (1.1.6)
   - EXApplication (6.1.5):
@@ -327,22 +326,6 @@ PODS:
   - hermes-engine (0.79.5):
     - hermes-engine/Pre-built (= 0.79.5)
   - hermes-engine/Pre-built (0.79.5)
-  - kakao-login (5.4.1):
-    - KakaoSDKAuth (= 2.22.0)
-    - KakaoSDKCommon (= 2.22.0)
-    - KakaoSDKUser (= 2.22.0)
-    - React
-  - KakaoSDKAuth (2.22.0):
-    - KakaoSDKCommon (= 2.22.0)
-  - KakaoSDKCommon (2.22.0):
-    - KakaoSDKCommon/Common (= 2.22.0)
-    - KakaoSDKCommon/Network (= 2.22.0)
-  - KakaoSDKCommon/Common (2.22.0)
-  - KakaoSDKCommon/Network (2.22.0):
-    - Alamofire (~> 5.9.0)
-    - KakaoSDKCommon/Common (= 2.22.0)
-  - KakaoSDKUser (2.22.0):
-    - KakaoSDKAuth (= 2.22.0)
   - mj-studio-react-native-naver-map (2.4.0):
     - DoubleConversion
     - glog
@@ -2348,7 +2331,6 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - "kakao-login (from `../node_modules/@react-native-seoul/kakao-login`)"
   - "mj-studio-react-native-naver-map (from `../node_modules/@mj-studio/react-native-naver-map`)"
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -2423,10 +2405,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Alamofire
-    - KakaoSDKAuth
-    - KakaoSDKCommon
-    - KakaoSDKUser
     - NMapsGeometry
     - NMapsMap
     - SocketRocket
@@ -2491,8 +2469,6 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2025-06-04-RNv0.79.3-7f9a871eefeb2c3852365ee80f0b6733ec12ac3b
-  kakao-login:
-    :path: "../node_modules/@react-native-seoul/kakao-login"
   mj-studio-react-native-naver-map:
     :path: "../node_modules/@mj-studio/react-native-naver-map"
   RCT-Folly:
@@ -2633,7 +2609,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXApplication: 50cc8ea58c138da6e3f25cd789634219c86b90d5
@@ -2663,10 +2638,6 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   hermes-engine: f03b0e06d3882d71e67e45b073bb827da1a21aae
-  kakao-login: 6f7a39583ae9e1a4e76240e66ae3ec575d461d1e
-  KakaoSDKAuth: 569b377eda622d93d4575240b8031cd658163eef
-  KakaoSDKCommon: d57127c339fc79e73aa8b236a4c77211c29924f1
-  KakaoSDKUser: 043bcd7e91454ebf3bf64f150c430e6f65f0a08d
   mj-studio-react-native-naver-map: cae333db46496c36dd8bd6aea59f0c441eb887e1
   NMapsGeometry: 4e02554fa9880ef02ed96b075dc84355d6352479
   NMapsMap: 8e7e35c2446e7c4a88d6dd0d64aa0d1de903e4f0
