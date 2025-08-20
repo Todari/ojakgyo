@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>ojakgyo</string>
-          <string>com.donghaeng.ojakgyo</string>
+          <string>com.ojakgyo.donghaeng</string>
         </array>
       </dict>
       <dict>

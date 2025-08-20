@@ -9,7 +9,11 @@
     "ios": "npx expo run:ios",
     "web": "npx expo start --web",
     "test": "jest --watchAll",
-    "gen-types": "supabase gen types typescript --project-id oecdktjwwbqtoewyabgr > types/database.types.ts"
+    "gen-types": "supabase gen types typescript --project-id oecdktjwwbqtoewyabgr > types/database.types.ts",
+    "build:ios": "EAS_NO_VCS=1 npx eas build -p ios --profile production --non-interactive",
+    "build:android": "EAS_NO_VCS=1 npx eas build -p android --profile production --non-interactive",
+    "submit:ios": "npx eas submit -p ios --latest",
+    "submit:android": "npx eas submit -p android --latest"
   },
   "jest": {
     "preset": "jest-expo"

@@ -212,9 +212,9 @@ export default function AuthPage() {
           카카오 계정으로 간편하게 로그인하세요
         </Typography>
 
-        <Typography variant='caption' style={styles.platformInfo}>
+        {/* <Typography variant='caption' style={styles.platformInfo}>
           🌐 OAuth 방식 (모든 환경 지원)
-        </Typography>
+        </Typography> */}
 
         <View style={styles.buttonContainer}>
           <Button 
