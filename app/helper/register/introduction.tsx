@@ -13,7 +13,7 @@ import { BottomButton } from "@/components/BottomButton";
 export default function HelperIntroductionPage() {
   const router = useRouter();
   const { categories, lat, lng } = useLocalSearchParams();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [age, setAge] = useState('');
   const [introduction, setIntroduction] = useState('');
   const [experience, setExperience] = useState('');

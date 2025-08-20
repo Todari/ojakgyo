@@ -6,19 +6,15 @@ import { Button } from "@/components/Button";
 // import { supabase } from "@/utils/supabase";
 // import * as Linking from "expo-linking";
 // import * as WebBrowser from "expo-web-browser";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { useAuth } from "@/hooks/useAuth";
 import Constants from 'expo-constants';
 import { supabase } from "@/utils/supabase";
-import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from 'expo-auth-session';
-import * as Crypto from 'expo-crypto';
 
 export default function AuthPage() {
   const router = useRouter();
-  const { login: authLogin } = useAuth();
 
   // 항상 OAuth 방식 사용 (네이티브 SDK 제거)
   const handleKakaoLogin = async () => {
@@ -29,25 +25,11 @@ export default function AuthPage() {
     try {
       console.log("=== Kakao OAuth Login Started (OAuth Only Method) ===");
       
-      // Expo Go 감지
-      const isExpoGo = Constants.executionEnvironment === 'storeClient';
-      
-      // 리다이렉트 URI 생성
-      let redirectUri;
-      
-      if (isExpoGo) {
-        // Expo Go: 자동으로 프록시 URI 생성
-        redirectUri = AuthSession.makeRedirectUri({
-          path: 'auth/callback/kakao'
-        });
-      } else {
-        // Development Build & TestFlight: Supabase 기본 콜백 사용 (테스트)
-        redirectUri = `https://oecdktjwwbqtoewyabgr.supabase.co/auth/v1/callback`;
-      }
+      // 네이티브/시뮬레이터/웹 공통 리다이렉트 URI (커스텀 스킴 기반)
+      const redirectUri = AuthSession.makeRedirectUri({ path: 'auth/callback/kakao' });
       
       console.log("🔍 Generated redirect URI (AuthSession):", redirectUri);
       console.log("🔍 Current execution environment:", Constants.executionEnvironment);
-      console.log("🔍 Is Expo Go:", isExpoGo);
       
       // Supabase 설정 확인
       console.log("Supabase URL:", process.env.EXPO_PUBLIC_SUPABASE_URL);
@@ -81,10 +63,7 @@ export default function AuthPage() {
         console.log("🚀 Opening OAuth URL:", data.url);
         console.log("🚀 Using redirect URI:", redirectUri);
           
-        const result = await WebBrowser.openAuthSessionAsync(
-          data.url, 
-          redirectUri
-        );
+        const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUri);
         
         console.log("WebBrowser result:", result);
         
@@ -92,11 +71,27 @@ export default function AuthPage() {
           console.log("OAuth successful, redirecting to callback");
           console.log("Result URL:", result.url);
           
-          // URL에서 코드 추출
+          // URL에서 code 또는 토큰(fragment) 추출
           const url = new URL(result.url);
           const code = url.searchParams.get('code');
           const error = url.searchParams.get('error');
           const errorDescription = url.searchParams.get('error_description');
+          const hash = url.hash; // "#access_token=...&refresh_token=..." or empty
+          let accessToken: string | null = null;
+          let refreshToken: string | null = null;
+          // 1) fragment 방식
+          if (hash && hash.startsWith('#')) {
+            const fragment = new URLSearchParams(hash.slice(1));
+            accessToken = fragment.get('access_token') || accessToken;
+            refreshToken = fragment.get('refresh_token') || refreshToken;
+            console.log('Extracted fragment tokens:', { accessTokenExists: !!accessToken, refreshTokenExists: !!refreshToken });
+          }
+          // 2) querystring 방식
+          if (!accessToken) accessToken = url.searchParams.get('access_token');
+          if (!refreshToken) refreshToken = url.searchParams.get('refresh_token');
+          if (accessToken || refreshToken) {
+            console.log('Extracted query tokens:', { accessTokenExists: !!accessToken, refreshTokenExists: !!refreshToken });
+          }
           
           console.log("Extracted code:", code);
           console.log("Extracted error:", error);
@@ -129,6 +124,25 @@ export default function AuthPage() {
             } else {
               console.log("No session created");
               Alert.alert("로그인 오류", "세션을 생성할 수 없습니다.");
+            }
+          } else if (accessToken && refreshToken) {
+            // 모바일/네이티브에서는 해시(fragment)로 토큰이 반환될 수 있음 → 수동 세션 설정
+            const { data: setData, error: setErr } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            if (setErr) {
+              console.error('Error setting session from fragment tokens:', setErr);
+              Alert.alert('로그인 오류', setErr.message);
+              return;
+            }
+            const authUser = setData?.session?.user;
+            if (authUser) {
+              await saveUserToDatabase(authUser);
+              Alert.alert('로그인 성공', '카카오 로그인이 완료되었습니다.');
+              router.replace('/');
+            } else {
+              Alert.alert('로그인 오류', '세션을 생성할 수 없습니다.');
             }
           }
         } else if (result.type === 'cancel') {

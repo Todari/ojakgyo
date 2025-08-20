@@ -19,33 +19,33 @@ interface HelperApplication {
 
 export default function HelperPage() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [application, setApplication] = useState<HelperApplication | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (session?.user) {
+    if (profile?.id) {
       fetchApplication();
     }
-  }, [session]);
+  }, [profile]);
 
   // 페이지에 포커스될 때마다 데이터 새로고침
   useFocusEffect(
     React.useCallback(() => {
-      if (session?.user) {
+      if (profile?.id) {
         fetchApplication();
       }
-    }, [session])
+    }, [profile])
   );
 
   const fetchApplication = async () => {
-    if (!session?.user) return;
+    if (!profile?.id) return;
 
     try {
       const { data, error } = await supabase
         .from('helper_applications')
         .select('*')
-        .eq('user_id', session.user.supabaseId)
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();

@@ -19,7 +19,7 @@ type ChatMessage = {
 export default function ChatRoomPage() {
   const { id, other } = useLocalSearchParams();
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState('');
   const [otherUser, setOtherUser] = useState<{ id: number; name?: string | null; thumbnail_url?: string | null } | null>(null);
@@ -58,7 +58,7 @@ export default function ChatRoomPage() {
   // 상대방 정보 로드 (participants/room_key/메시지 기반 다중 경로)
   useEffect(() => {
     const loadOtherUser = async () => {
-      if (!id || !session?.user?.supabaseId) return;
+      if (!id || !profile?.id) return;
       try {
         const roomId = String(id);
         let hintedOther = other ? Number(Array.isArray(other) ? other[0] : other) : undefined;
@@ -71,7 +71,7 @@ export default function ChatRoomPage() {
           console.error('load room error', roomErr);
           return;
         }
-        const myId = Number(session.user.supabaseId);
+        const myId = Number(profile.id);
         let otherId: number | undefined;
         // 0) URL hint 우선 사용
         if (!otherId && hintedOther && hintedOther !== myId) {
@@ -133,11 +133,11 @@ export default function ChatRoomPage() {
       }
     };
     loadOtherUser();
-  }, [id, session?.user?.supabaseId]);
+  }, [id, profile?.id]);
 
   const send = async () => {
     if (!text.trim()) return;
-    if (!session?.user?.supabaseId) {
+    if (!profile?.id) {
       Alert.alert('알림', '로그인이 필요합니다.');
       return;
     }
@@ -146,7 +146,7 @@ export default function ChatRoomPage() {
     setText('');
     const { error } = await supabase
       .from('chat_messages')
-      .insert({ room_id: roomId, sender_id: session.user.supabaseId, content, created_at: new Date().toISOString() });
+      .insert({ room_id: roomId, sender_id: profile.id, content, created_at: new Date().toISOString() });
     if (error) {
       Alert.alert('오류', '메시지 전송 실패');
     }
@@ -167,7 +167,7 @@ export default function ChatRoomPage() {
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
-            const mine = item.sender_id === session?.user?.supabaseId;
+            const mine = Number(item.sender_id) === Number(profile?.id);
             return (
               <View style={[styles.bubble, mine ? styles.bubbleMe : styles.bubbleOther]}>
                 <Typography variant='body'>{item.content}</Typography>

@@ -3,8 +3,19 @@ import { Stack, SplashScreen, useRouter, useSegments } from 'expo-router';
 import { useFonts } from 'expo-font';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
 
 WebBrowser.maybeCompleteAuthSession();
+
+// Kakao가 토큰을 쿼리스트링으로 붙여줄 때도 안전하게 처리
+Linking.addEventListener('url', ({ url }) => {
+  try {
+    const parsed = new URL(url);
+    if (parsed.pathname?.includes('/auth/callback/kakao')) {
+      console.log('Deep link received:', url);
+    }
+  } catch {}
+});
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -37,22 +48,19 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  // 자동 리다이렉션 비활성화 - 사용자가 직접 페이지 선택할 수 있도록
-  // const { session, loading } = useAuth();
-  // const router = useRouter();
-  // const segments = useSegments();
+  const { session, loading } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
 
-  // useEffect(() => {
-  //   if (loading) return;
-
-  //   const inAuthGroup = segments[0] === 'auth';
-
-  //   if (session && !inAuthGroup) {
-  //     router.replace('/helper');
-  //   } else if (!session) {
-  //     router.replace('/auth');
-  //   }
-  // }, [session, loading, segments]);
+  useEffect(() => {
+    if (loading) return;
+    const inAuthGroup = segments[0] === 'auth';
+    if (session && inAuthGroup) {
+      router.replace('/');
+    } else if (!session && !inAuthGroup) {
+      router.replace('/auth');
+    }
+  }, [session, loading, segments]);
 
   return (
     <Stack>

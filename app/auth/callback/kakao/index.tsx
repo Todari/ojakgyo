@@ -76,8 +76,7 @@ export default function KakaoCallbackPage() {
           .upsert({
             // Supabase auth user.id를 사용하여 고유 식별자로 설정
             supabase_user_id: user.id,
-            email: user.email,
-            // email 필드 제거 - 카카오에서 제공하지 않으므로 저장하지 않음
+            // email은 카카오에서 제공되지 않으므로 저장하지 않음
             provider: 'kakao',
             updated_at: new Date().toISOString(),
             // OAuth에서 받은 사용자 메타데이터

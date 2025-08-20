@@ -13,14 +13,14 @@ import { CATEGORY_MAP, getCategoryById } from "@/constants/categories";
 
 export default function HelperCompletePage() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const { categories, name, age, introduction, experience, lat, lng } = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
 
   const handleSubmit = async () => {
-    if (!session?.user?.supabaseId) {
+    if (!profile?.id) {
       Alert.alert('오류', '로그인이 필요합니다.');
       router.push('/auth');
       return;
@@ -31,8 +31,8 @@ export default function HelperCompletePage() {
       try {
         // payload 구성 (lat/lng 포함 시도)
         const payloadWithLocation: any = {
-          user_id: session.user.supabaseId,
-          name: (name as string) || (session.user?.nickname as string) || (session.user?.name as string) || '이름 미설정',
+          user_id: profile.id,
+          name: (name as string) || (profile.name as string) || '이름 미설정',
           age: parseInt(age as string),
           categories: selectedCategories,
           introduction: introduction as string,
@@ -59,8 +59,8 @@ export default function HelperCompletePage() {
             const { error: retryError } = await supabase
               .from('helper_applications')
               .insert({
-                user_id: session.user.supabaseId,
-                name: (name as string) || (session.user?.nickname as string) || (session.user?.name as string) || '이름 미설정',
+                user_id: profile.id,
+                name: (name as string) || (profile.name as string) || '이름 미설정',
                 age: parseInt(age as string),
                 categories: selectedCategories,
                 introduction: introduction as string,

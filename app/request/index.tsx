@@ -21,33 +21,33 @@ interface HelpRequest {
 
 export default function RequestPage() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
 
   const [request, setRequest] = useState<HelpRequest | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (session?.user) {
+    if (profile?.id) {
       fetchLatestRequest();
     }
-  }, [session]);
+  }, [profile]);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (session?.user) {
+      if (profile?.id) {
         fetchLatestRequest();
       }
-    }, [session])
+    }, [profile])
   );
 
   const fetchLatestRequest = async () => {
-    if (!session?.user) return;
+    if (!profile?.id) return;
 
     try {
       const { data, error } = await supabase
         .from('help_requests')
         .select('*')
-        .eq('user_id', session.user.supabaseId)
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();

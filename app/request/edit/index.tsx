@@ -24,7 +24,7 @@ interface HelpRequest {
 
 export default function RequestEditPage() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
 
   const [request, setRequest] = useState<HelpRequest | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,19 +36,19 @@ export default function RequestEditPage() {
   const [status, setStatus] = useState<RequestStatus>('published');
 
   useEffect(() => {
-    if (session?.user) {
+    if (profile?.id) {
       fetchRequest();
     }
-  }, [session]);
+  }, [profile]);
 
   const fetchRequest = async () => {
-    if (!session?.user?.supabaseId) return;
+    if (!profile?.id) return;
 
     try {
       const { data, error } = await supabase
         .from('help_requests')
         .select('*')
-        .eq('user_id', session.user.supabaseId)
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();

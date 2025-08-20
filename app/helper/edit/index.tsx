@@ -25,7 +25,7 @@ interface HelperApplication {
 
 export default function HelperEditPage() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [application, setApplication] = useState<HelperApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,19 +38,19 @@ export default function HelperEditPage() {
   const [status, setStatus] = useState<'published' | 'private'>('published');
 
   useEffect(() => {
-    if (session?.user) {
+    if (profile?.id) {
       fetchApplication();
     }
-  }, [session]);
+  }, [profile]);
 
   const fetchApplication = async () => {
-    if (!session?.user?.supabaseId) return;
+    if (!profile?.id) return;
 
     try {
       const { data, error } = await supabase
         .from('helper_applications')
         .select('*')
-        .eq('user_id', session.user.supabaseId)
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();

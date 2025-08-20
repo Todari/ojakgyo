@@ -21,7 +21,7 @@ type HelpRequestDetail = {
 export default function HelpRequestDetailPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const { session } = useAuth();
+  const { profile } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [request, setRequest] = useState<HelpRequestDetail | null>(null);
@@ -57,7 +57,7 @@ export default function HelpRequestDetailPage() {
   }, [id]);
 
   const openOrCreateChat = async () => {
-    if (!session?.user?.supabaseId) {
+    if (!profile?.id) {
       Alert.alert('알림', '로그인이 필요합니다.');
       router.push('/auth');
       return;
@@ -65,7 +65,7 @@ export default function HelpRequestDetailPage() {
     if (!request?.user_id) return;
 
     try {
-      const me = Number(session.user.supabaseId);
+      const me = Number(profile.id);
       const other = Number(request.user_id);
       const [a, b] = me < other ? [me, other] : [other, me];
       const roomKey = `${a}:${b}`;

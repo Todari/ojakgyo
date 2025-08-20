@@ -24,7 +24,7 @@ type HelperDetail = {
 export default function HelperDetailPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [helper, setHelper] = useState<HelperDetail | null>(null);
 
@@ -61,7 +61,7 @@ export default function HelperDetailPage() {
   }, [id]);
 
   const openOrCreateChat = async () => {
-    if (!session?.user?.supabaseId) {
+    if (!profile?.id) {
       Alert.alert('알림', '로그인이 필요합니다.');
       router.push('/auth');
       return;
@@ -70,7 +70,7 @@ export default function HelperDetailPage() {
 
     try {
       // 룸 조회 또는 생성. participants 배열 대신 room_key로 일관된 1:1 방을 보장
-      const me = Number(session.user.supabaseId);
+      const me = Number(profile.id);
       const other = Number(helper.user_id);
       const [a, b] = me < other ? [me, other] : [other, me];
       const roomKey = `${a}:${b}`;

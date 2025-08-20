@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
   const router = useRouter();
-  const { user, logout, loading } = useAuth();
+  const { profile, session, logout, loading } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -35,7 +35,7 @@ export default function Home() {
       
       <View style={styles.content}>
         <Typography variant='title' weight='bold' style={styles.title}>
-          {user ? `안녕하세요, ${user.nickname}님!` : '오작교에 오신 것을 환영합니다'}
+          {session ? `안녕하세요, ${profile?.name ?? '회원'}님!` : '오작교에 오신 것을 환영합니다'}
         </Typography>
         
         <Typography variant='body' style={styles.subtitle}>
@@ -43,7 +43,7 @@ export default function Home() {
         </Typography>
 
         <View style={styles.buttonContainer}>
-          {user ? (
+          {session ? (
             <>
               <Button
                 title="Children으로 이동"

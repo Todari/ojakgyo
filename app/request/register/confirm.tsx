@@ -12,14 +12,14 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function RequestConfirmPage() {
   const router = useRouter();
-  const { session } = useAuth();
+  const { profile } = useAuth();
   const { categories, details, lat, lng } = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
 
   const handleSubmit = async () => {
-    if (!session?.user?.supabaseId) {
+    if (!profile?.id) {
       Alert.alert('오류', '로그인이 필요합니다.');
       router.push('/auth');
       return;
@@ -30,8 +30,8 @@ export default function RequestConfirmPage() {
       const { error } = await supabase
         .from('help_requests')
         .insert({
-          user_id: session.user.supabaseId,
-          name: session.user?.nickname || session.user?.name || null,
+          user_id: profile.id,
+          name: profile.name || null,
           categories: selectedCategories,
           details: details as string,
           status: 'published',
