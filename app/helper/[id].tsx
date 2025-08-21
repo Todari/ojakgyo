@@ -11,14 +11,13 @@ import { HELP_CATEGORIES } from '@/constants/categories';
 import { useAuth } from '@/hooks/useAuth';
 
 type HelperDetail = {
-  id: string;
-  user_id: string;
+  id: number;
+  user_id: number | null;
   name: string;
   age: number | null;
   categories: string[];
   introduction: string | null;
   experience?: string | null;
-  users?: { id: string; nickname?: string | null; thumbnail_url?: string | null } | null;
 };
 
 export default function HelperDetailPage() {
