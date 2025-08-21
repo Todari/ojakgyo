@@ -9,12 +9,12 @@ import { HELP_CATEGORIES } from '@/constants/categories';
 import { supabase } from '@/utils/supabase';
 import { useRouter } from 'expo-router';
 
-type HelperApplicationRow = {
-  id: string;
-  name: string;
+type HelpRequestRow = {
+  id: number;
+  name: string | null;
   lat: number | null;
   lng: number | null;
-  categories: string[] | null;
+  categories: string[]; // 실제 스키마상 not null
   status?: string | null;
   users?: { thumbnail_url: string | null } | null;
 };
@@ -26,7 +26,7 @@ export default function RequestMapPage() {
   const router = useRouter();
   const mapRef = useRef<NaverMapViewRef>(null);
 
-  const [helpers, setHelpers] = useState<HelperApplicationRow[]>([]);
+  const [requests, setRequests] = useState<HelpRequestRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [positions, setPositions] = useState<Record<string, ScreenPos>>({});
@@ -51,7 +51,7 @@ export default function RequestMapPage() {
       try {
         const { data, error } = await supabase
           .from('help_requests')
-          .select('id, name, lat, lng, categories, status, users:users(thumbnail_url)')
+          .select('id, name, lat, lng, categories, status, users:users!help_requests_user_id_fkey(thumbnail_url)')
           .not('lat', 'is', null)
           .not('lng', 'is', null);
 
@@ -59,7 +59,8 @@ export default function RequestMapPage() {
           console.error('Error fetching help requests for map:', error);
           setError('요청을 불러오는 중 오류가 발생했습니다.');
         } else if (data) {
-          setHelpers((data as unknown) as HelperApplicationRow[]);
+          console.log('[map:requests] fetched', (data as any[]).length);
+          setRequests((data as unknown) as HelpRequestRow[]);
         }
       } catch (e) {
         console.error('Unexpected error:', e);
@@ -71,10 +72,10 @@ export default function RequestMapPage() {
   }, []);
 
   const updateScreenPositions = useCallback(async () => {
-    if (!mapRef.current || helpers.length === 0) return;
+    if (!mapRef.current || requests.length === 0) return;
     try {
       const entries = await Promise.all(
-        helpers.map(async (row) => {
+        requests.map(async (row) => {
           const res = await mapRef.current!.coordinateToScreen({
             latitude: row.lat as number,
             longitude: row.lng as number,
@@ -85,7 +86,7 @@ export default function RequestMapPage() {
             x: res.screenX,
             y: res.screenY,
           };
-          return [row.id, mapped] as const;
+          return [String(row.id), mapped] as const;
         })
       );
       const next: Record<string, ScreenPos> = {};
@@ -96,7 +97,11 @@ export default function RequestMapPage() {
     } catch (e) {
       // ignore
     }
-  }, [helpers]);
+  }, [requests]);
+
+  useEffect(() => {
+    updateScreenPositions();
+  }, [requests, updateScreenPositions]);
 
   const initialRegion = {
     latitude: 37.5519,
@@ -124,13 +129,16 @@ export default function RequestMapPage() {
 
       {/* Overlay custom cards anchored to screen positions */}
       <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
-        {helpers.map((row) => {
-          const pos = positions[row.id];
+        {requests.map((row) => {
+          const pos = positions[String(row.id)];
           if (!pos || !pos.isValid) return null;
           const CARD_WIDTH = 180;
           const CARD_HEIGHT = 64;
-          const left = pos.x - CARD_WIDTH / 2;
-          const top = pos.y - CARD_HEIGHT - 12; // place above the coordinate
+          // 간단한 지터로 겹침 완화
+          const jitterX = ((Number(row.id) % 7) - 3) * 10;
+          const jitterY = ((Number(row.id) % 5) - 2) * 8;
+          const left = pos.x - CARD_WIDTH / 2 + jitterX;
+          const top = pos.y - CARD_HEIGHT - 12 + jitterY; // place above the coordinate
 
           const categories = (row.categories || []).slice(0, 2);
           return (

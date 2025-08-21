@@ -10,11 +10,11 @@ import { supabase } from '@/utils/supabase';
 import { useRouter } from 'expo-router';
 
 type HelperApplicationRow = {
-  id: string;
+  id: number;
   name: string;
   lat: number | null;
   lng: number | null;
-  categories: string[] | null;
+  categories: string[]; // 실제 스키마상 not null
   status?: string | null;
   users?: { thumbnail_url: string | null } | null;
 };
@@ -51,7 +51,7 @@ export default function RequestMapPage() {
       try {
         const { data, error } = await supabase
           .from('helper_applications')
-          .select('id, name, lat, lng, categories, status, users:users(thumbnail_url)')
+          .select('id, name, lat, lng, categories, status, users:users!helper_applications_user_id_fkey(thumbnail_url)')
           .not('lat', 'is', null)
           .not('lng', 'is', null);
 
@@ -59,6 +59,7 @@ export default function RequestMapPage() {
           console.error('Error fetching help requests for map:', error);
           setError('요청을 불러오는 중 오류가 발생했습니다.');
         } else if (data) {
+          console.log('[map:helpers] fetched', (data as any[]).length);
           setHelpers((data as unknown) as HelperApplicationRow[]);
         }
       } catch (e) {
@@ -85,7 +86,7 @@ export default function RequestMapPage() {
             x: res.screenX,
             y: res.screenY,
           };
-          return [row.id, mapped] as const;
+          return [String(row.id), mapped] as const;
         })
       );
       const next: Record<string, ScreenPos> = {};
@@ -97,6 +98,10 @@ export default function RequestMapPage() {
       // ignore
     }
   }, [helpers]);
+
+  useEffect(() => {
+    updateScreenPositions();
+  }, [helpers, updateScreenPositions]);
 
   const initialRegion = {
     latitude: 37.5519,
@@ -125,12 +130,14 @@ export default function RequestMapPage() {
       {/* Overlay custom cards anchored to screen positions */}
       <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
         {helpers.map((row) => {
-          const pos = positions[row.id];
+          const pos = positions[String(row.id)];
           if (!pos || !pos.isValid) return null;
           const CARD_WIDTH = 180;
           const CARD_HEIGHT = 64;
-          const left = pos.x - CARD_WIDTH / 2;
-          const top = pos.y - CARD_HEIGHT - 12; // place above the coordinate
+          const jitterX = ((Number(row.id) % 7) - 3) * 10;
+          const jitterY = ((Number(row.id) % 5) - 2) * 8;
+          const left = pos.x - CARD_WIDTH / 2 + jitterX;
+          const top = pos.y - CARD_HEIGHT - 12 + jitterY; // place above the coordinate
 
           const categories = (row.categories || []).slice(0, 2);
           return (
