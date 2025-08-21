@@ -10,11 +10,14 @@ import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import Constants from 'expo-constants';
 import { supabase } from "@/utils/supabase";
+
+import { useAuth } from '@/hooks/useAuth';
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from 'expo-auth-session';
 
 export default function AuthPage() {
   const router = useRouter();
+  const { session } = useAuth();
 
   // 항상 OAuth 방식 사용 (네이티브 SDK 제거)
   const handleKakaoLogin = async () => {
@@ -39,8 +42,8 @@ export default function AuthPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'kakao',
         options: {
-          redirectTo: redirectUri
-          // queryParams 제거 - 카카오 기본 스코프만 사용
+          redirectTo: redirectUri,
+          queryParams: { scope: 'account_email profile_nickname profile_image' }
         },
       });
 
@@ -160,32 +163,41 @@ export default function AuthPage() {
     } catch (error) {
       console.error("Kakao login error:", error);
       Alert.alert("로그인 오류", "카카오 로그인 중 오류가 발생했습니다.");
+    } finally {
+      // iOS에서 웹 인증 쿠키가 남아 재인증/로그아웃 충돌을 유발하는 케이스 감소
+      try { await WebBrowser.dismissBrowser(); } catch {}
+      // 일부 환경에서만 존재하는 API 대비: 존재 여부 체크 후 호출
+      try { (WebBrowser as any).coolDownAsync && await (WebBrowser as any).coolDownAsync(); } catch {}
     }
   };
 
   const saveUserToDatabase = async (user: any) => {
     try {
-      // 사용자 정보를 users 테이블에 저장/업데이트 (이메일 제외)
+      // 사용자 정보를 users 테이블에 저장/업데이트
+      const kakaoId = String(
+        user.user_metadata?.sub ||
+        user.user_metadata?.id ||
+        user.user_metadata?.provider_id ||
+        user.id
+      );
       const { data, error } = await supabase
         .from('users')
         .upsert({
           // Supabase auth user.id를 사용하여 고유 식별자로 설정
           supabase_user_id: user.id,
-          // email 필드 제거 - 카카오에서 제공하지 않으므로 저장하지 않음
+          email: user.email || user.user_metadata?.email || null,
           provider: 'kakao',
           updated_at: new Date().toISOString(),
           // OAuth에서 받은 사용자 메타데이터
           name: user.user_metadata?.nickname || user.user_metadata?.name,
           thumbnail_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
-          kakao_id: user.user_metadata?.sub || user.user_metadata?.id,
+          kakao_id: kakaoId,
           // 기본 위치 설정 (서울)
           lat: 37.5519,
           lng: 126.9918,
           last_login_at: new Date().toISOString(),
           created_at: new Date().toISOString(),
-        }, {
-          onConflict: 'kakao_id'
-        });
+        }, { onConflict: 'supabase_user_id' });
 
       if (error) {
         console.error("Error saving user to database:", error);
@@ -198,6 +210,11 @@ export default function AuthPage() {
   };
 
 
+
+  if (session) {
+    // 이미 로그인된 상태면 홈으로
+    return null;
+  }
 
   return (
     <SafeAreaView style={styles.container}>

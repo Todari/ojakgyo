@@ -35,7 +35,13 @@ export default function Home() {
       
       <View style={styles.content}>
         <Typography variant='title' weight='bold' style={styles.title}>
-          {session ? `안녕하세요, ${profile?.name ?? '회원'}님!` : '오작교에 오신 것을 환영합니다'}
+          {session ? `안녕하세요, ${(
+            profile?.name ??
+            (session.user?.user_metadata?.nickname as string | undefined) ??
+            (session.user?.user_metadata?.name as string | undefined) ??
+            (session.user?.email ? String(session.user.email).split('@')[0] : undefined) ??
+            '회원'
+          )}님!` : '오작교에 오신 것을 환영합니다'}
         </Typography>
         
         <Typography variant='body' style={styles.subtitle}>

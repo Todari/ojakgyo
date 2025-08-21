@@ -70,13 +70,13 @@ export default function KakaoCallbackPage() {
 
     const saveUserToDatabase = async (user: any) => {
       try {
-        // 사용자 정보를 users 테이블에 저장/업데이트 (이메일 제외)
+        // 사용자 정보를 users 테이블에 저장/업데이트 (email 포함)
         const { data, error } = await supabase
           .from('users')
           .upsert({
             // Supabase auth user.id를 사용하여 고유 식별자로 설정
             supabase_user_id: user.id,
-            // email은 카카오에서 제공되지 않으므로 저장하지 않음
+            email: user.email || user.user_metadata?.email || null,
             provider: 'kakao',
             updated_at: new Date().toISOString(),
             // OAuth에서 받은 사용자 메타데이터
