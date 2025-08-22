@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Stack, SplashScreen, useRouter, useSegments } from 'expo-router';
+import { Stack, Slot, SplashScreen, useRouter, useSegments } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import * as WebBrowser from 'expo-web-browser';
@@ -55,36 +56,13 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
     const inAuthGroup = segments[0] === 'auth';
-    if (session && inAuthGroup) {
-      router.replace('/');
-    } else if (!session && !inAuthGroup) {
+    if (!session && !inAuthGroup) {
       router.replace('/auth');
+    } else if (session && inAuthGroup) {
+      router.replace('/(tabs)/helper');
     }
   }, [session, loading, segments]);
 
-  return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="chat/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/index" options={{ headerShown: false }} />
-      <Stack.Screen name="auth/callback/kakao/index" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/index" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/map/index" options={{ headerShown: false }} />
-      <Stack.Screen name="request/[id]" options={{ headerShown: false }} />
-      <Stack.Screen name="request/map/index" options={{ headerShown: false }} />
-      <Stack.Screen name="request/register/location" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/register/index" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/register/introduction" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/register/complete" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/register/location" options={{ headerShown: false }} />
-      <Stack.Screen name="helper/edit/index" options={{ headerShown: false }} />
-      <Stack.Screen name="children/index" options={{ headerShown: false }} />
-      <Stack.Screen name="request/index" options={{ headerShown: false }} />
-      <Stack.Screen name="request/register/index" options={{ headerShown: false }} />
-      <Stack.Screen name="request/register/details" options={{ headerShown: false }} />
-      <Stack.Screen name="request/register/confirm" options={{ headerShown: false }} />
-      <Stack.Screen name="request/edit/index" options={{ headerShown: false }} />
-    </Stack>
-  );
+  // 루트는 Slot만 두고, 그룹별 레이아웃에서 렌더
+  return <Slot />;
 }

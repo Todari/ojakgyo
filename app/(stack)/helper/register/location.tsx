@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from '@/components/Themed';
 import { Typography } from '@/components/Typography';
@@ -55,20 +55,6 @@ export default function HelperLocationPage() {
     setLng(longitude);
   }, []);
 
-  const handleUseCurrentLocation = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('권한 필요', '설정에서 위치 권한을 허용해주세요.');
-        return;
-      }
-      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      animateTo(pos.coords.latitude, pos.coords.longitude);
-    } catch (e) {
-      Alert.alert('오류', '현위치 정보를 가져오지 못했습니다.');
-    }
-  };
-
   const hasNaverApiKeys = !!process.env.EXPO_PUBLIC_NAVER_MAPS_KEY_ID && !!process.env.EXPO_PUBLIC_NAVER_MAPS_KEY;
 
   const handleSearch = async () => {
@@ -79,7 +65,6 @@ export default function HelperLocationPage() {
     }
     try {
       setSearching(true);
-      // 장소 검색 API (키워드)
       const url = `https://naveropenapi.apigw.ntruss.com/map-place/v1/search?query=${encodeURIComponent(search.trim())}&display=5`;
       const res = await fetch(url, {
         headers: {
@@ -112,15 +97,10 @@ export default function HelperLocationPage() {
     router.push(`/helper/register?lat=${lat}&lng=${lng}`);
   };
 
-
   useEffect(() => {
     (async () => {
       try {
         const {granted} = await Location.requestForegroundPermissionsAsync();
-        /**
-         * Note: Foreground permissions should be granted before asking for the background permissions
-         * (your app can't obtain background permission without foreground permission).
-         */
         if(granted) {
           await Location.requestBackgroundPermissionsAsync();
         }
@@ -136,21 +116,18 @@ export default function HelperLocationPage() {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   };
-  const mapType = 'Basic';
+  const mapType = 'Basic' as const;
 
   return (
     <SafeAreaView style={styles.container}>
       <Header left='back' />
-
       <View style={styles.content}>
         <Typography variant='title' weight='bold' style={styles.title}>
           도와드릴 수 있는{'\n'}위치를 설정해주세요.
         </Typography>
-        
         <Typography variant='body' style={styles.subtitle}>
           해당 위치 근처의 어르신들이 확인할 수 있어요.
         </Typography>
-
         <View style={styles.mapWrapper}>
           <NaverMapView
             ref={mapRef}
@@ -172,9 +149,6 @@ export default function HelperLocationPage() {
           </View>
         </View>
       </View>
-
-      
-
       <BottomButton title='다음' onPress={handleNext} />
     </SafeAreaView>
   );
@@ -182,51 +156,14 @@ export default function HelperLocationPage() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: {
-    flex: 1,
-  },
-  title: {
-    marginTop:8,
-    marginBottom: 8,
-    lineHeight: 32,
-  },
-  subtitle: {
-    marginBottom: 32,
-    opacity: 0.7,
-  },
-  mapContainer: { flex: 1 },
-  mapWrapper: {
-    flex: 1,
-    marginHorizontal: -24,
-  },
-  centerPin: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginLeft: -8,
-    marginTop: -16,
-    alignItems: 'center',
-  },
-  pinHead: {
-    width: 16,
-    height: 16,
-    borderRadius: 16,
-    backgroundColor: '#EF4444',
-  },
-  pinTail: {
-    width: 2,
-    height: 18,
-    backgroundColor: '#EF4444',
-  },
-  myLocationFab: {
-    position: 'absolute',
-    right: 16,
-    bottom: 16,
-    backgroundColor: '#111827',
-    opacity: 0.9,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
+  content: { flex: 1 },
+  title: { marginTop:8, marginBottom: 8, lineHeight: 32 },
+  subtitle: { marginBottom: 32, opacity: 0.7 },
+  mapWrapper: { flex: 1, marginHorizontal: -24 },
+  centerPin: { position: 'absolute', top: '50%', left: '50%', marginLeft: -8, marginTop: -16, alignItems: 'center' },
+  pinHead: { width: 16, height: 16, borderRadius: 16, backgroundColor: '#EF4444' },
+  pinTail: { width: 2, height: 18, backgroundColor: '#EF4444' },
+  myLocationFab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#111827', opacity: 0.9, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
 });
+
 

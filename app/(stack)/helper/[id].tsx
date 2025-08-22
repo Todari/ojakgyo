@@ -68,7 +68,6 @@ export default function HelperDetailPage() {
     if (!helper?.user_id) return;
 
     try {
-      // 룸 조회 또는 생성. participants 배열 대신 room_key로 일관된 1:1 방을 보장
       const me = Number(profile.id);
       const other = Number(helper.user_id);
       const [a, b] = me < other ? [me, other] : [other, me];

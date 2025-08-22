@@ -15,16 +15,10 @@ export default function RequestConfirmPage() {
   const { profile } = useAuth();
   const { categories, details, lat, lng } = useLocalSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
 
   const handleSubmit = async () => {
-    if (!profile?.id) {
-      Alert.alert('오류', '로그인이 필요합니다.');
-      router.push('/auth');
-      return;
-    }
-
+    if (!profile?.id) { Alert.alert('오류', '로그인이 필요합니다.'); router.push('/auth'); return; }
     setIsSubmitting(true);
     try {
       const { error } = await supabase
@@ -36,82 +30,45 @@ export default function RequestConfirmPage() {
           details: details as string,
           status: 'published',
           created_at: new Date().toISOString(),
-          ...(typeof lat === 'string' && typeof lng === 'string'
-            ? { lat: parseFloat(lat), lng: parseFloat(lng) }
-            : {}),
+          ...(typeof lat === 'string' && typeof lng === 'string' ? { lat: parseFloat(lat), lng: parseFloat(lng) } : {}),
         });
-
       if (error) {
         console.error('Error submitting help request:', error);
-        if (error.code === '42P01') {
-          Alert.alert(
-            '데이터베이스 오류',
-            'help_requests 테이블이 존재하지 않습니다. 다음 파일을 Supabase SQL Editor에서 실행해주세요:\n- supabase_migrations/create_help_requests_table.sql'
-          );
-          return;
-        }
+        if (error.code === '42P01') { Alert.alert('데이터베이스 오류', 'help_requests 테이블이 존재하지 않습니다.'); return; }
         Alert.alert('오류', `제출 중 오류가 발생했습니다. 코드: ${error.code || 'Unknown'}`);
         return;
       }
-
-      Alert.alert('등록 완료', '도움 요청이 성공적으로 등록되었습니다.', [
-        { text: '확인', onPress: () => router.push('/request') },
-      ]);
+      Alert.alert('등록 완료', '도움 요청이 성공적으로 등록되었습니다.', [{ text: '확인', onPress: () => router.push('/request') }]);
     } catch (e) {
       console.error('Unexpected error:', e);
       Alert.alert('오류', '예상치 못한 오류가 발생했습니다.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Header left='back'/>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Typography variant='title' weight='bold' style={styles.title}>
-          요청 내용을 확인해주세요
-        </Typography>
-        <Typography variant='body' style={styles.subtitle}>
-          제출 전에 입력한 정보를 다시 확인하세요
-        </Typography>
-
+        <Typography variant='title' weight='bold' style={styles.title}>요청 내용을 확인해주세요</Typography>
+        <Typography variant='body' style={styles.subtitle}>제출 전에 입력한 정보를 다시 확인하세요</Typography>
         <View style={styles.summaryContainer}>
           <View style={styles.section}>
-            <Typography variant='body' weight='semibold' style={styles.sectionTitle}>
-              도움 종류
-            </Typography>
+            <Typography variant='body' weight='semibold' style={styles.sectionTitle}>도움 종류</Typography>
             <View style={styles.categoriesContainer}>
               {selectedCategories.map((categoryId) => {
                 const category = CATEGORY_MAP[categoryId as keyof typeof CATEGORY_MAP];
                 return (
-                  <ToggleChip
-                    key={categoryId}
-                    label={`${category.icon} ${category.label}`}
-                    selected
-                    variant='primary'
-                    size='sm'
-                    disabled
-                    style={styles.categoryChip}
-                  />
+                  <ToggleChip key={categoryId} label={`${category.icon} ${category.label}`} selected variant='primary' size='sm' disabled style={styles.categoryChip} />
                 );
               })}
             </View>
           </View>
-
           <View style={styles.section}>
-            <Typography variant='body' weight='semibold' style={styles.sectionTitle}>
-              추가 요청사항
-            </Typography>
-            <View style={styles.textContainer}>
-              <Typography variant='body' style={styles.textContent}>
-                {details as string}
-              </Typography>
-            </View>
+            <Typography variant='body' weight='semibold' style={styles.sectionTitle}>추가 요청사항</Typography>
+            <View style={styles.textContainer}><Typography variant='body' style={styles.textContent}>{String(details || '')}</Typography></View>
           </View>
         </View>
       </ScrollView>
-
       <BottomButton title={isSubmitting ? '제출 중...' : '요청 제출하기'} onPress={handleSubmit} disabled={isSubmitting} />
     </SafeAreaView>
   );

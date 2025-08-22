@@ -53,12 +53,10 @@ export default function RequestPage() {
         .single();
 
       if (error) {
-        // 데이터가 없는 경우 (요청서가 없음)
         if ((error as any).code === 'PGRST116') {
           setRequest(null);
           return;
         }
-        // 테이블이 존재하지 않는 경우
         if ((error as any).code === '42P01') {
           console.log('help_requests 테이블이 존재하지 않습니다. Supabase에서 테이블을 생성해주세요.');
           setRequest(null);
@@ -168,55 +166,17 @@ export default function RequestPage() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  subtitle: {
-    marginBottom: 32,
-    opacity: 0.7,
-  },
-  requestStatus: {
-    backgroundColor: '#F9FAFB',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 24,
-  },
-  statusHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  requestInfo: {
-    opacity: 0.7,
-    marginBottom: 8,
-  },
-  statusHint: {
-    color: '#6b7280',
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
-  button: {
-    marginBottom: 16,
-  },
+  container: { flex: 1 },
+  content: { flex: 1 },
+  title: { marginTop: 8, marginBottom: 8 },
+  subtitle: { marginBottom: 32, opacity: 0.7 },
+  requestStatus: { backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB', padding: 16, borderRadius: 16, marginBottom: 24 },
+  statusHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
+  statusText: { color: 'white', fontWeight: '600' },
+  requestInfo: { opacity: 0.7, marginBottom: 8 },
+  statusHint: { color: '#6b7280', fontSize: 12, fontStyle: 'italic' },
+  button: { marginBottom: 16 },
 });
 
 

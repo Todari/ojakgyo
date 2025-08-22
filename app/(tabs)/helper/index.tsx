@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Alert } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from '@/components/Themed';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
@@ -29,7 +29,6 @@ export default function HelperPage() {
     }
   }, [profile]);
 
-  // 페이지에 포커스될 때마다 데이터 새로고침
   useFocusEffect(
     React.useCallback(() => {
       if (profile?.id) {
@@ -51,29 +50,20 @@ export default function HelperPage() {
         .single();
 
       if (error) {
-        // 데이터가 없는 경우는 정상 (신청서가 없음)
         if (error.code === 'PGRST116') {
-          console.log('신청서가 없습니다.');
           setApplication(null);
           return;
         }
-        
-        // 테이블이 존재하지 않는 경우
         if (error.code === '42P01') {
-          console.log('helper_applications 테이블이 존재하지 않습니다. Supabase에서 테이블을 생성해주세요.');
           setApplication(null);
           return;
         }
-        
-        // 기타 에러는 로깅만 하고 계속 진행
-        console.error('Error fetching application:', error);
         setApplication(null);
         return;
       }
 
       setApplication(data);
-    } catch (error) {
-      console.error('Unexpected error:', error);
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -93,9 +83,9 @@ export default function HelperPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'published':
-        return '#21B500'; // 기존 primary 색상 (게시됨)
+        return '#21B500';
       case 'private':
-        return '#6B7280'; // 기존 gray-500 (비공개)
+        return '#6B7280';
       default:
         return '#6B7280';
     }
@@ -103,18 +93,15 @@ export default function HelperPage() {
 
   const handleRegister = () => {
     if (application) {
-      // 이미 신청서가 있으면 수정 페이지로 이동
       router.push('/helper/edit');
     } else {
-      // 신청서가 없으면 새로 등록
       router.push('/helper/register/location');
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header left='back' />
-      
+      <Header left='logo' />
       <View style={styles.content}>
         <Typography variant='title' weight='bold' style={styles.title}>
           도움이 필요하신 분들을 찾아볼까요?
@@ -129,11 +116,8 @@ export default function HelperPage() {
           onPress={() => router.push('/helper/map')}
           style={styles.button}
         />
-        
         <Categories />
-        
 
-        {/* 신청 상태 표시 */}
         {application && (
           <View style={styles.applicationStatus}>
             <View style={styles.statusHeader}>
@@ -161,67 +145,30 @@ export default function HelperPage() {
             )}
           </View>
         )}
-        
+
         <Button
-          title={application ? "신청서 수정하기" : "직접 도우미 등록하기"}
+          title={application ? '신청서 수정하기' : '직접 도우미 등록하기'}
           onPress={handleRegister}
-          variant="secondary"
+          variant='secondary'
           style={styles.button}
         />
-
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  title: {
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  subtitle: {
-    marginBottom: 32,
-    opacity: 0.7,
-  },
-  applicationStatus: {
-    backgroundColor: '#F9FAFB', // 기존 gray-50
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 24,
-  },
-  statusHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    color: 'white',
-    fontWeight: '600',
-  },
-  applicationInfo: {
-    opacity: 0.7,
-    marginBottom: 8,
-  },
-  statusHint: {
-    color: '#6b7280',
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
-  button: {
-    marginBottom: 16,
-  },
+  container: { flex: 1 },
+  content: { flex: 1 },
+  title: { marginTop: 8, marginBottom: 8 },
+  subtitle: { marginBottom: 32, opacity: 0.7 },
+  applicationStatus: { backgroundColor: '#F9FAFB', borderWidth: 1, borderColor: '#E5E7EB', padding: 16, borderRadius: 16, marginBottom: 24 },
+  statusHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
+  statusText: { color: 'white', fontWeight: '600' },
+  applicationInfo: { opacity: 0.7, marginBottom: 8 },
+  statusHint: { color: '#6b7280', fontSize: 12, fontStyle: 'italic' },
+  button: { marginBottom: 16 },
 });
+
+

@@ -55,7 +55,6 @@ export default function ChatRoomPage() {
     };
   }, [id]);
 
-  // 상대방 정보 로드 (participants/room_key/메시지 기반 다중 경로)
   useEffect(() => {
     const loadOtherUser = async () => {
       if (!id || !profile?.id) return;
@@ -73,22 +72,18 @@ export default function ChatRoomPage() {
         }
         const myId = Number(profile.id);
         let otherId: number | undefined;
-        // 0) URL hint 우선 사용
         if (!otherId && hintedOther && hintedOther !== myId) {
           otherId = hintedOther;
         }
-        // 1) room_key가 있으면 우선 사용
         if (room?.room_key && typeof room.room_key === 'string') {
           const [a, b] = room.room_key.split(':').map((t: string) => Number(t));
           const ids = [a, b].filter((n) => Number.isFinite(n)) as number[];
           otherId = ids.find((n) => n !== myId);
         }
-        // 2) participants에서 탐색
         if (!otherId) {
           const participants: number[] = (room?.participants || []).map((n: any) => Number(n));
           otherId = participants.find((pid) => pid !== myId);
         }
-        // 3) 최근 메시지에서 상대 식별
         if (!otherId) {
           const { data: lastMsg } = await supabase
             .from('chat_messages')

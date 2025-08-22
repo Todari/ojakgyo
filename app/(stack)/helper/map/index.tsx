@@ -2,19 +2,18 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NaverMapView, NaverMapViewRef } from '@mj-studio/react-native-naver-map';
 import * as Location from 'expo-location';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '@/components/Typography';
 import { HELP_CATEGORIES } from '@/constants/categories';
 import { supabase } from '@/utils/supabase';
-import { useRouter } from 'expo-router';
 
 type HelpRequestRow = {
   id: number;
   name: string | null;
   lat: number | null;
   lng: number | null;
-  categories: string[]; // 실제 스키마상 not null
+  categories: string[];
   status?: string | null;
   users?: { thumbnail_url: string | null } | null;
 };
@@ -22,7 +21,6 @@ type HelpRequestRow = {
 type ScreenPos = { isValid: boolean; x: number; y: number };
 
 export default function RequestMapPage() {
-  const navigation = useNavigation();
   const router = useRouter();
   const mapRef = useRef<NaverMapViewRef>(null);
 
@@ -59,7 +57,6 @@ export default function RequestMapPage() {
           console.error('Error fetching help requests for map:', error);
           setError('요청을 불러오는 중 오류가 발생했습니다.');
         } else if (data) {
-          console.log('[map:requests] fetched', (data as any[]).length);
           setRequests((data as unknown) as HelpRequestRow[]);
         }
       } catch (e) {
@@ -80,7 +77,6 @@ export default function RequestMapPage() {
             latitude: row.lat as number,
             longitude: row.lng as number,
           });
-          // remap to ScreenPos shape
           const mapped: ScreenPos = {
             isValid: res.isValid,
             x: res.screenX,
@@ -127,18 +123,16 @@ export default function RequestMapPage() {
         {error && <Typography variant='body' weight='bold'>에러가 발생했습니다.</Typography>}
       </NaverMapView>
 
-      {/* Overlay custom cards anchored to screen positions */}
       <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
         {requests.map((row) => {
           const pos = positions[String(row.id)];
           if (!pos || !pos.isValid) return null;
           const CARD_WIDTH = 180;
           const CARD_HEIGHT = 64;
-          // 간단한 지터로 겹침 완화
           const jitterX = ((Number(row.id) % 7) - 3) * 10;
           const jitterY = ((Number(row.id) % 5) - 2) * 8;
           const left = pos.x - CARD_WIDTH / 2 + jitterX;
-          const top = pos.y - CARD_HEIGHT - 12 + jitterY; // place above the coordinate
+          const top = pos.y - CARD_HEIGHT - 12 + jitterY;
 
           const categories = (row.categories || []).slice(0, 2);
           return (
@@ -146,14 +140,11 @@ export default function RequestMapPage() {
               key={row.id}
               activeOpacity={0.9}
               onPress={() => router.push(`/request/${row.id}`)}
-              style={[
-                styles.card,
-                { left, top, width: CARD_WIDTH, height: CARD_HEIGHT },
-              ]}
+              style={[styles.card, { left, top, width: CARD_WIDTH, height: CARD_HEIGHT }]}
             >
               <View style={styles.cardRow}>
                 <Image
-                  source={row.users?.thumbnail_url ? { uri: row.users.thumbnail_url } : require('../../../assets/images/icon.png')}
+                  source={row.users?.thumbnail_url ? { uri: row.users.thumbnail_url } : require('../../../../assets/images/icon.png')}
                   style={styles.avatar}
                 />
                 <View style={{ flex: 1 }}>
@@ -178,10 +169,7 @@ export default function RequestMapPage() {
         })}
       </View>
 
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.goBack()}
-      >
+      <TouchableOpacity style={styles.fab} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
     </View>
@@ -192,7 +180,7 @@ const styles = StyleSheet.create({
   card: {
     position: 'absolute',
     backgroundColor: '#ffffff',
-    borderColor: '#10B981', // emerald-500
+    borderColor: '#10B981',
     borderWidth: 1,
     borderRadius: 12,
     padding: 8,

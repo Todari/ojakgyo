@@ -218,7 +218,7 @@ export default function AuthPage() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header left="back" />
+      <Header left="logo" />
       
       <View style={styles.content}>
         <Typography variant="title" weight="bold" style={styles.title}>
