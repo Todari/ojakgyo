@@ -170,7 +170,7 @@ export default function ChatRoomPage() {
               </View>
             );
           }}
-          contentContainerStyle={{ padding: 16, gap: 8 }}
+          contentContainerStyle={{ gap: 8 }}
         />
         <View style={styles.inputRow}>
           <TextInput
@@ -188,13 +188,13 @@ export default function ChatRoomPage() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  otherBar: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  otherBar: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 0, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
   otherAvatar: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#E5E7EB' },
   bubble: { padding: 12, borderRadius: 12, maxWidth: '80%' },
   bubbleMe: { backgroundColor: '#DCFCE7', alignSelf: 'flex-end' },
   bubbleOther: { backgroundColor: '#F3F4F6', alignSelf: 'flex-start' },
-  inputRow: { flexDirection: 'row', alignItems: 'center', padding: 12, gap: 8 },
-  input: { flex: 1, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 8, paddingHorizontal: 12, height: 44 },
+  inputRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 0, paddingVertical: 12, gap: 8 },
+  input: { flex: 1, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 20, paddingHorizontal: 12, height: 56 },
 });
 
 

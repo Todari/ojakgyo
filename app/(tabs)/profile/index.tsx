@@ -48,7 +48,7 @@ export default function ProfilePage() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1, padding: 16, justifyContent: 'center', gap: 16 },
+  content: { flex: 1, justifyContent: 'center', gap: 16 },
   rolesRow: { gap: 12 },
   roleBtn: { alignSelf: 'stretch' },
 });

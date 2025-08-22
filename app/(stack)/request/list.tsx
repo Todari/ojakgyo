@@ -51,7 +51,7 @@ export default function RequestListPage() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={{ padding: 16, gap: 12 }}
+        contentContainerStyle={{ gap: 12 }}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} onPress={() => router.push(`/request/${item.id}`)}>
             <Typography variant='body' weight='semibold'>{item.name || `요청 #${item.id}`}</Typography>
@@ -71,7 +71,7 @@ export default function RequestListPage() {
 }
 
 const styles = StyleSheet.create({
-  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 16, paddingVertical: 12 },
+  filterRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingHorizontal: 0, paddingVertical: 12 },
   card: { borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 12, backgroundColor: '#fff' },
 });
 

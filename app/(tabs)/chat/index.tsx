@@ -158,12 +158,12 @@ const AVATAR_SIZE = 44;
 const styles = StyleSheet.create({
   container: { flex: 1 },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  row: { paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center' },
+  row: { paddingHorizontal: 0, paddingVertical: 12, flexDirection: 'row', alignItems: 'center' },
   avatar: { width: AVATAR_SIZE, height: AVATAR_SIZE, borderRadius: AVATAR_SIZE / 2, backgroundColor: '#E5E7EB', marginRight: 12, overflow: 'hidden' },
   avatarImg: { width: '100%', height: '100%' },
   center: { flex: 1, gap: 2 },
   right: { marginLeft: 8, alignItems: 'flex-end' },
-  separator: { height: 1, backgroundColor: '#E5E7EB', marginLeft: 16 + AVATAR_SIZE + 12 },
+  separator: { height: 1, backgroundColor: '#E5E7EB', marginLeft: AVATAR_SIZE + 12 },
   emptyContainer: { flexGrow: 1, justifyContent: 'center', padding: 32 },
   empty: { alignItems: 'center' },
 });
