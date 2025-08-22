@@ -41,6 +41,63 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
 
+  // 로그인 직후 public.users를 단일 경로로 생성/업데이트
+  const ensureUserProfile = async () => {
+    try {
+      const { data: current } = await supabase.auth.getSession();
+      const s = current.session;
+      const user = s?.user;
+      if (!user?.id) return;
+
+      const nameFromMeta =
+        (user.user_metadata?.nickname as string | undefined) ||
+        (user.user_metadata?.name as string | undefined) ||
+        (user.email ? String(user.email).split('@')[0] : undefined) ||
+        '회원';
+
+      const profileUrl =
+        (user.user_metadata?.avatar_url as string | undefined) ||
+        (user.user_metadata?.picture as string | undefined) ||
+        null;
+
+      // 단일 경로: 앱에서 직접 upsert 수행
+      const kakaoId = String(
+        (user.user_metadata?.sub as string | undefined) ||
+        (user.user_metadata?.id as string | undefined) ||
+        (user.user_metadata?.provider_id as string | undefined) ||
+        user.id
+      );
+
+      const { data, error } = await supabase
+        .from('users')
+        .upsert(
+          {
+            supabase_user_id: user.id,
+            email: (user.email as string | null) || (user.user_metadata?.email as string | null) || null,
+            provider: 'kakao',
+            name: nameFromMeta,
+            thumbnail_url: profileUrl,
+            kakao_id: kakaoId,
+            last_login_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            created_at: new Date().toISOString(),
+          } as any,
+          { onConflict: 'supabase_user_id' } as any
+        )
+        .select('*')
+        .maybeSingle();
+
+      if (error) {
+        console.error('ensureUserProfile upsert 오류:', error);
+      }
+      if (data) {
+        setProfile(data as any);
+      }
+    } catch (e) {
+      console.error('ensureUserProfile 예외:', e);
+    }
+  };
+
   const refreshProfile = async () => {
     try {
       const { data: current } = await supabase.auth.getSession();
@@ -103,6 +160,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(data.session);
       setLoading(false);
       if (data.session?.user) {
+        await ensureUserProfile();
         await refreshProfile();
       }
     };
@@ -112,6 +170,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       async (_event, newSession) => {
         setSession(newSession);
         if (newSession?.user) {
+          await ensureUserProfile();
           await refreshProfile();
         } else {
           setProfile(null);

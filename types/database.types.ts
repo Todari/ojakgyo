@@ -182,12 +182,12 @@ export type Database = {
           created_at: string
           email: string | null
           id: number
-          kakao_id: string
+          kakao_id: string | null
           last_login_at: string | null
           name: string | null
           provider: string
           role: Database["public"]["Enums"]["Role"]
-          supabase_user_id: string | null
+          supabase_user_id: string
           thumbnail_url: string | null
           updated_at: string
         }
@@ -195,12 +195,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: number
-          kakao_id: string
+          kakao_id?: string | null
           last_login_at?: string | null
           name?: string | null
-          provider: string
+          provider?: string
           role?: Database["public"]["Enums"]["Role"]
-          supabase_user_id?: string | null
+          supabase_user_id: string
           thumbnail_url?: string | null
           updated_at?: string
         }
@@ -208,12 +208,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: number
-          kakao_id?: string
+          kakao_id?: string | null
           last_login_at?: string | null
           name?: string | null
           provider?: string
           role?: Database["public"]["Enums"]["Role"]
-          supabase_user_id?: string | null
+          supabase_user_id?: string
           thumbnail_url?: string | null
           updated_at?: string
         }
@@ -238,12 +238,12 @@ export type Database = {
           created_at: string
           email: string | null
           id: number
-          kakao_id: string
+          kakao_id: string | null
           last_login_at: string | null
           name: string | null
           provider: string
           role: Database["public"]["Enums"]["Role"]
-          supabase_user_id: string | null
+          supabase_user_id: string
           thumbnail_url: string | null
           updated_at: string
         }

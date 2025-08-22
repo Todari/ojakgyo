@@ -118,10 +118,6 @@ export default function AuthPage() {
             
             if (sessionData.session) {
               console.log("Session created successfully:", sessionData.session.user);
-              
-              // 사용자 정보를 Supabase에 저장
-              await saveUserToDatabase(sessionData.session.user);
-              
               Alert.alert("로그인 성공", "카카오 로그인이 완료되었습니다.");
               router.replace('/');
             } else {
@@ -141,7 +137,6 @@ export default function AuthPage() {
             }
             const authUser = setData?.session?.user;
             if (authUser) {
-              await saveUserToDatabase(authUser);
               Alert.alert('로그인 성공', '카카오 로그인이 완료되었습니다.');
               router.replace('/');
             } else {
@@ -171,43 +166,7 @@ export default function AuthPage() {
     }
   };
 
-  const saveUserToDatabase = async (user: any) => {
-    try {
-      // 사용자 정보를 users 테이블에 저장/업데이트
-      const kakaoId = String(
-        user.user_metadata?.sub ||
-        user.user_metadata?.id ||
-        user.user_metadata?.provider_id ||
-        user.id
-      );
-      const { data, error } = await supabase
-        .from('users')
-        .upsert({
-          // Supabase auth user.id를 사용하여 고유 식별자로 설정
-          supabase_user_id: user.id,
-          email: user.email || user.user_metadata?.email || null,
-          provider: 'kakao',
-          updated_at: new Date().toISOString(),
-          // OAuth에서 받은 사용자 메타데이터
-          name: user.user_metadata?.nickname || user.user_metadata?.name,
-          thumbnail_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
-          kakao_id: kakaoId,
-          // 기본 위치 설정 (서울)
-          lat: 37.5519,
-          lng: 126.9918,
-          last_login_at: new Date().toISOString(),
-          created_at: new Date().toISOString(),
-        }, { onConflict: 'supabase_user_id' });
-
-      if (error) {
-        console.error("Error saving user to database:", error);
-      } else {
-        console.log("User saved to database successfully");
-      }
-    } catch (error) {
-      console.error("Error in saveUserToDatabase:", error);
-    }
-  };
+  // 저장 로직은 useAuth.ensureUserProfile에서 단일 경로로 처리합니다.
 
 
 

@@ -12,19 +12,24 @@ interface HeaderProps {
   title?: string;
   avatarUrl?: string | null;
   onTitlePress?: () => void;
+  onBackPress?: () => void;
 }
 
-export function Header({ left, title, avatarUrl, onTitlePress }: HeaderProps) {
+export function Header({ left, title, avatarUrl, onTitlePress, onBackPress }: HeaderProps) {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      {left === 'logo' && <Typography variant='subtitle' color='default' weight='black'>OJAKGYO</Typography>}
-      {left === 'back' && 
-      <Pressable onPress={() => router.back()}>
-        <FontAwesome name="chevron-left" size={24} color={Colors.light.text} />
-      </Pressable>
-      }
+      <View style={styles.leftContainer}>
+        {left === 'logo' && (
+          <Typography variant='subtitle' color='default' weight='black'>OJAKGYO</Typography>
+        )}
+        {left === 'back' && (
+          <Pressable onPress={() => (onBackPress ? onBackPress() : router.back())}>
+            <FontAwesome name="chevron-left" size={24} color={Colors.light.text} />
+          </Pressable>
+        )}
+      </View>
       {!!title && (
         <Pressable style={styles.center} onPress={onTitlePress} disabled={!onTitlePress}>
           <View style={styles.centerContent}>
@@ -48,7 +53,9 @@ container: {
   backgroundColor: 'transparent',
 },
 center: {
-  flex: 1,
+  position: 'absolute',
+  left: 48,
+  right: 48,
   alignItems: 'center',
 },
 centerContent: {
@@ -57,11 +64,16 @@ centerContent: {
   gap: 8,
 },
 centerAvatar: {},
+leftContainer: {
+  minWidth: 24,
+  alignItems: 'flex-start',
+},
 rightContainer: {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
   gap: 24,
   backgroundColor: 'transparent',
+  minWidth: 24,
 },
 });

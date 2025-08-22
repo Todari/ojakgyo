@@ -154,6 +154,7 @@ export default function ChatRoomPage() {
         title={otherName ?? otherUser?.name ?? '상대방'}
         avatarUrl={otherUser?.thumbnail_url || null}
         onTitlePress={otherHelperId ? () => router.push(`/helper/${otherHelperId}`) : undefined}
+        onBackPress={() => router.replace('/(tabs)/chat')}
       />
       
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
