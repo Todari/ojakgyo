@@ -38,7 +38,9 @@ export default function RequestConfirmPage() {
         Alert.alert('오류', `제출 중 오류가 발생했습니다. 코드: ${error.code || 'Unknown'}`);
         return;
       }
-      Alert.alert('등록 완료', '도움 요청이 성공적으로 등록되었습니다.', [{ text: '확인', onPress: () => router.push('/request') }]);
+      Alert.alert('등록 완료', '도움 요청이 성공적으로 등록되었습니다.', [
+        { text: '확인', onPress: () => router.replace('/(tabs)/home') }
+      ]);
     } catch (e) {
       console.error('Unexpected error:', e);
       Alert.alert('오류', '예상치 못한 오류가 발생했습니다.');
