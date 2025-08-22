@@ -186,6 +186,7 @@ export type Database = {
           last_login_at: string | null
           name: string | null
           provider: string
+          role: Database["public"]["Enums"]["Role"]
           supabase_user_id: string | null
           thumbnail_url: string | null
           updated_at: string
@@ -198,6 +199,7 @@ export type Database = {
           last_login_at?: string | null
           name?: string | null
           provider: string
+          role?: Database["public"]["Enums"]["Role"]
           supabase_user_id?: string | null
           thumbnail_url?: string | null
           updated_at?: string
@@ -210,6 +212,7 @@ export type Database = {
           last_login_at?: string | null
           name?: string | null
           provider?: string
+          role?: Database["public"]["Enums"]["Role"]
           supabase_user_id?: string | null
           thumbnail_url?: string | null
           updated_at?: string
@@ -239,6 +242,7 @@ export type Database = {
           last_login_at: string | null
           name: string | null
           provider: string
+          role: Database["public"]["Enums"]["Role"]
           supabase_user_id: string | null
           thumbnail_url: string | null
           updated_at: string
@@ -246,7 +250,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      Role: "senior" | "children" | "helper"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -373,6 +377,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      Role: ["senior", "children", "helper"],
+    },
   },
 } as const

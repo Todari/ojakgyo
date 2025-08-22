@@ -13,6 +13,7 @@ type Profile = {
   created_at?: string;
   updated_at?: string;
   last_login_at?: string;
+  role?: 'senior' | 'children' | 'helper' | null;
 };
 
 type AuthContextType = {
@@ -21,6 +22,7 @@ type AuthContextType = {
   profile: Profile | null;
   refreshProfile: () => Promise<void>;
   logout: () => Promise<void>;
+  updateRole: (role: 'senior' | 'children' | 'helper') => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,6 +31,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   refreshProfile: async () => {},
   logout: async () => {},
+  updateRole: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -58,6 +61,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setProfile(data ?? null);
     } catch (e) {
       console.error('프로필 로드 오류:', e);
+    }
+  };
+
+  const updateRole = async (role: 'senior' | 'children' | 'helper') => {
+    try {
+      if (!profile?.id) return;
+      const { error } = await supabase
+        .from('users')
+        .update({ role, updated_at: new Date().toISOString() })
+        .eq('id', profile.id);
+      if (error) {
+        console.error('역할 업데이트 오류:', error);
+        return;
+      }
+      await refreshProfile();
+    } catch (e) {
+      console.error('역할 업데이트 중 예외:', e);
     }
   };
 
@@ -105,7 +125,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ session, loading, profile, refreshProfile, logout }}>
+    <AuthContext.Provider value={{ session, loading, profile, refreshProfile, logout, updateRole }}>
       {children}
     </AuthContext.Provider>
   );

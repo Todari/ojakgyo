@@ -59,7 +59,7 @@ function RootLayoutNav() {
     if (!session && !inAuthGroup) {
       router.replace('/auth');
     } else if (session && inAuthGroup) {
-      router.replace('/(tabs)/helper');
+      router.replace('/(tabs)/home');
     }
   }, [session, loading, segments]);
 

@@ -23,7 +23,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="helper/index"
+        name="home/index"
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{ transform: [{ translateY: 6 }] }}>

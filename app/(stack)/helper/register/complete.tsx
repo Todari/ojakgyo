@@ -56,7 +56,7 @@ export default function HelperCompletePage() {
             Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다. 코드: ${retryError.code || 'Unknown'}`);
             return;
           }
-          Alert.alert('등록 완료!', '도움 신청서가 등록되었습니다. 위치 컬럼이 없어 위치 저장은 생략되었습니다.', [{ text: '확인', onPress: () => router.push('/helper') }]);
+          Alert.alert('등록 완료!', '도움 신청서가 등록되었습니다. 위치 컬럼이 없어 위치 저장은 생략되었습니다.', [{ text: '확인', onPress: () => router.push('/(tabs)/home') }]);
           return;
         }
         if (firstError.code === '42P01') {
@@ -66,7 +66,7 @@ export default function HelperCompletePage() {
         Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다. 코드: ${firstError.code || 'Unknown'}`);
         return;
       }
-      Alert.alert('등록 완료!', '도움 신청서가 성공적으로 등록되었습니다.', [{ text: '확인', onPress: () => router.push('/helper') }]);
+      Alert.alert('등록 완료!', '도움 신청서가 성공적으로 등록되었습니다.', [{ text: '확인', onPress: () => router.push('/(tabs)/home') }]);
     } catch (e) {
       Alert.alert('오류', '예상치 못한 오류가 발생했습니다.');
     } finally { setIsSubmitting(false); }
