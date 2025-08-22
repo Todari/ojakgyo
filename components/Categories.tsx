@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, Pressable } from "react-native";
 import { Typography } from '@/components/Typography';
 import { HELP_CATEGORIES } from '@/constants/categories';
 
@@ -27,11 +27,12 @@ type CategoryType = keyof typeof CATEGORY_TABLE;
 
 interface CategoryProps {
   type: CategoryType;
+  onPress?: (id: string) => void;
 }
 
-function Category({ type }: CategoryProps) {
+function Category({ type, onPress }: CategoryProps) {
   return (
-    <View style={styles.categoryContainer}>
+    <Pressable style={styles.categoryContainer} onPress={onPress ? () => onPress(type) : undefined} disabled={!onPress}>
       <Image source={CATEGORY_TABLE[type].image} style={styles.categoryImage} />
       <View style={styles.categoryTextContainer}>
         <Typography
@@ -44,13 +45,13 @@ function Category({ type }: CategoryProps) {
           {CATEGORY_TABLE[type].title}
         </Typography>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
 const MAX_ROWS = 4;
 
-export function Categories() {
+export function Categories({ onSelect }: { onSelect?: (id: string) => void }) {
   const originKeys = Object.keys(CATEGORY_TABLE).sort((a,b): number => {
     return CATEGORY_TABLE[a as CategoryType].order - CATEGORY_TABLE[b as CategoryType].order;
   })
@@ -64,7 +65,7 @@ export function Categories() {
         <View style={styles.categoryRow} key={index}>
           {Array.from({length: MAX_ROWS}).map((_, colIdx) => (
             keys[colIdx]
-              ? <Category key={keys[colIdx]} type={keys[colIdx] as CategoryType} />
+              ? <Category key={keys[colIdx]} type={keys[colIdx] as CategoryType} onPress={onSelect} />
               : <View key={`empty-${index}-${colIdx}`} style={styles.categoryTextContainer} />
           ))}
         </View>

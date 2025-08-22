@@ -124,7 +124,7 @@ export default function RequestPage() {
           style={styles.button}
         />
 
-        <Categories />
+        <Categories onSelect={(id) => router.push(`/request/list?category=${id}`)} />
 
         {request && (
           <View style={styles.requestStatus}>

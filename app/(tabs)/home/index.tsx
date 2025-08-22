@@ -110,7 +110,7 @@ export default function HomeByRole() {
         어르신을 위한 맞춤 도움 서비스를 제공합니다
       </Typography>
       <Button title="지도에서 어르신 찾기" onPress={() => router.push('/helper/map')} style={styles.button} />
-      <Categories />
+      <Categories onSelect={(id) => router.push(`/helper/list?category=${id}`)} />
       {application && (
         <View style={styles.applicationStatus}>
           <View style={styles.statusHeader}>
@@ -148,7 +148,7 @@ export default function HomeByRole() {
       <Typography variant='title' weight='bold' style={styles.title}>어떤 도움이 필요하신가요?</Typography>
       <Typography variant='body' style={styles.subtitle}>원하는 도움을 요청하거나, 주변의 도우미를 찾아보세요</Typography>
       <Button title="지도에서 도우미 찾기" onPress={() => router.push('/request/map')} style={styles.button} />
-      <Categories />
+      <Categories onSelect={(id) => router.push(`/request/list?category=${id}`)} />
       {/* 최근 내 요청 상태 간단 표시 (최신 1건) */}
       {/* 심플화를 위해 application을 재활용하지 않고 별도 요청 조회는 생략 (상세는 스택에서 확인) */}
       <Button title="도움 요청 등록하기" onPress={() => router.push('/request/register/location')} variant='secondary' style={styles.button} />
