@@ -6,96 +6,37 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { Categories } from '@/components/Categories';
 import { Typography } from '@/components/Typography';
-import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/hooks/useAuth';
+import { useHelpRequestLatest } from '@/features/request/hooks/useHelpRequestLatest';
+import { formatRequestStatusText, formatRequestStatusColor } from '@/utils/format';
 
 type RequestStatus = 'published' | 'private';
-
-interface HelpRequest {
-  id: string;
-  title: string;
-  status: RequestStatus;
-  created_at: string;
-  categories: string[];
-}
 
 export default function RequestPage() {
   const router = useRouter();
   const { profile } = useAuth();
 
-  const [request, setRequest] = useState<HelpRequest | null>(null);
-  const [loading, setLoading] = useState(true);
+  const userId = typeof profile?.id === 'number' ? profile?.id : undefined;
+  const { data: request, loading, refetch } = useHelpRequestLatest(userId);
 
   useEffect(() => {
-    if (profile?.id) {
-      fetchLatestRequest();
+    if (userId) {
+      refetch();
     }
-  }, [profile]);
+  }, [userId]);
 
   useFocusEffect(
     React.useCallback(() => {
-      if (profile?.id) {
-        fetchLatestRequest();
+      if (userId) {
+        refetch();
       }
-    }, [profile])
+    }, [userId])
   );
 
-  const fetchLatestRequest = async () => {
-    if (!profile?.id) return;
+  // 데이터 로딩은 훅이 담당
 
-    try {
-      const { data, error } = await supabase
-        .from('help_requests')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (error) {
-        if ((error as any).code === 'PGRST116') {
-          setRequest(null);
-          return;
-        }
-        if ((error as any).code === '42P01') {
-          console.log('help_requests 테이블이 존재하지 않습니다. Supabase에서 테이블을 생성해주세요.');
-          setRequest(null);
-          return;
-        }
-        console.error('Error fetching help request:', error);
-        setRequest(null);
-        return;
-      }
-
-      setRequest(data as HelpRequest);
-    } catch (e) {
-      console.error('Unexpected error:', e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusText = (status: RequestStatus) => {
-    switch (status) {
-      case 'published':
-        return '게시됨';
-      case 'private':
-        return '비공개';
-      default:
-        return '알 수 없음';
-    }
-  };
-
-  const getStatusColor = (status: RequestStatus) => {
-    switch (status) {
-      case 'published':
-        return '#21B500';
-      case 'private':
-        return '#6B7280';
-      default:
-        return '#6B7280';
-    }
-  };
+  const getStatusText = formatRequestStatusText;
+  const getStatusColor = formatRequestStatusColor;
 
   const handleRegister = () => {
     if (request) {
