@@ -1,118 +1,116 @@
-# ojakgyo
+## Ojakgyo – 구조/가이드
 
-## 카카오 네이티브 로그인 설정 가이드
+이 프로젝트는 어르신·도우미 매칭을 위한 모바일 앱입니다. 유지보수성과 확장성을 위해 UI/기능/데이터 계층을 명확히 분리하는 것을 목표로 리팩토링되었습니다.
 
-현재 Supabase OAuth는 일시적으로 비활성화되어 있으며, 카카오 네이티브 SDK를 사용한 로그인을 구현했습니다.
+### 핵심 스택
+- Expo + React Native, Expo Router
+- Supabase (Auth + DB) – `createClient<Database>`로 타입 안정성 보장
+- React Query – 데이터 캐싱/리페치 표준화
+- React Hook Form + Zod – 폼 상태/검증
+- Naver Map (`@mj-studio/react-native-naver-map`), Expo Location
 
-### 1. Kakao 개발자 포털 설정
+### 폴더 구조(요약)
+```
+app/                        # expo-router 기반 화면
+  (tabs|stack)/*
+features/                   # 도메인별 모듈
+  auth/  services|hooks
+  request/ services|hooks|schemas|components
+  helper/  services|hooks|schemas|components
+  map/     hooks|services
+components/                 # 재사용 UI
+  ui/ layout/ form/ category/
+constants/                  # 색상/토큰(semantic), 팔레트
+hooks/                      # cross-cutting 훅(guard 등)
+utils/                      # supabase, config, logger, format
+```
 
-#### 1.1 앱 생성 및 설정
-1. [Kakao Developers Portal](https://developers.kakao.com)에 로그인
-2. "My Application" → "Add an application" 클릭
-3. 앱 정보 입력:
-   - App icon
-   - App name
-   - Company name
-4. "Save" 클릭
+### 설계 원칙
+- 화면은 입력/네비게이션만 담당. 데이터 접근은 훅(`features/*/hooks`)과 서비스(`features/*/services`)에서만 수행.
+- 서비스는 Supabase 쿼리만 포함(순수 함수); 훅은 React Query로 캐싱/로딩/에러를 담당.
+- 폼은 RHF + Zod 스키마로 검증/타입 동기화.
+- 색상/타이포 등 스타일은 semantic 토큰만 사용(하드코딩 hex 금지).
 
-#### 1.2 네이티브 앱 키 확인
-- 앱 대시보드의 "App Keys" 섹션에서 "Native app key" 확인
-- 이 값을 환경 변수로 설정합니다
+### 인증/라우팅
+- 카카오 OAuth(Supabase): `app/auth/index.tsx` → OAuth → `auth/callback/kakao` → `useAuth`에서 프로필 upsert/로드.
+- `useAuthGuard`, `withRoleGuard`로 그룹/역할 기반 라우팅 제어.
 
-#### 1.3 플랫폼 설정
+### 데이터 계층 규약
+- 서비스 예: `features/request/services/helpRequests.ts`
+  - `listRequests`, `createHelpRequest`, `updateHelpRequest`, `deleteHelpRequest`…
+- 훅 예: `features/request/hooks/useRequestList.ts`
+  - Query Key 규칙: `['request', 'list']`, `['request', 'latest', userId]`
+  - 변경 후 `queryClient.invalidateQueries({ queryKey: [...] })`로 최소 무효화
 
-**iOS 설정:**
-1. "Platform" → "iOS" 추가
-2. Bundle ID: `com.anonymous.ojakgyo`
-3. "Save" 클릭
+### 지도/위치 공통화
+- `useLocationPermission`: 포그라운드/백그라운드 권한 요청 캡슐화
+- `useNaverMarkers`: 좌표→스크린 좌표 계산 및 상태 관리
 
-**Android 설정:**
-1. "Platform" → "Android" 추가
-2. Package Name: `com.anonymous.ojakgyo`
-3. Market URL: 선택사항
-4. "Save" 클릭
+### 스타일 파운데이션
+- `constants/colors.ts`: primitive 팔레트 + semantic 토큰(light/dark)
+- `Typography`, `Button`, `Input`, `ToggleChip` 등은 토큰 기반으로 스타일링
+- 화면/컴포넌트에서 hex 직접 사용 금지(토큰만 사용)
 
-#### 1.4 카카오 로그인 활성화
-1. "Product settings" → "Kakao Login" → "Kakao Login" 스위치 활성화
-2. "Consent Items"에서 다음 스코프 설정:
-   - `profile_nickname` (닉네임) - 필수
-   - `profile_image` (프로필 사진) - 선택
-   - `account_email` (이메일) - 선택
-
-### 2. 환경 변수 설정
-
-`.env` 파일을 생성하고 다음 내용을 추가하세요:
-
+### 환경 변수
 ```env
-# 카카오 네이티브 앱 키 (필수)
-EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY=your_kakao_native_app_key_here
-
-# Supabase 설정 (현재 주석처리됨)
-# EXPO_PUBLIC_SUPABASE_URL=https://tjwbbqtoewyabgr.supabase.co
-# EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+EXPO_PUBLIC_SUPABASE_URL=...
+EXPO_PUBLIC_SUPABASE_ANON_KEY=...
+EXPO_PUBLIC_NAVER_MAPS_KEY_ID=...
+EXPO_PUBLIC_NAVER_MAPS_KEY=...
 ```
+리다이렉트 URI: `ojakgyo://auth/callback/kakao`
 
-### 3. 앱 실행
-
+### 개발 준비/실행
 ```bash
-# 캐시 클리어 후 실행
+nvm use 22.17.0
+yarn
 npx expo start --clear
-
-# iOS에서 실행 (개발 빌드 필요)
-npx expo run:ios
-
-# Android에서 실행 (개발 빌드 필요)
-npx expo run:android
 ```
 
-### 4. 네이티브 로그인 플로우
+### 스크립트(요약)
+```bash
+# 개발 서버
+yarn start
 
-1. **사용자가 카카오 로그인 버튼 클릭**
-2. **카카오 네이티브 SDK 호출**: `@react-native-seoul/kakao-login` 사용
-3. **카카오 앱/웹뷰 열림**: 사용자가 카카오에서 로그인
-4. **토큰 획득**: 카카오에서 OAuth 토큰 반환
-5. **프로필 정보 획득**: `getProfile()` API로 사용자 정보 획득
-6. **로컬 저장**: AsyncStorage에 사용자 정보 저장
-7. **인증 상태 업데이트**: Auth Context에서 로그인 상태 관리
+# iOS/Android 개발 빌드 실행
+yarn ios
+yarn android
 
-### 5. 주요 특징
+# 타입/린트
+yarn typecheck
+yarn lint
 
-- **네이티브 SDK 사용**: 더 안정적이고 빠른 로그인 경험
-- **오프라인 세션 관리**: AsyncStorage를 사용한 로그인 상태 유지
-- **간단한 구조**: Supabase 없이도 동작하는 독립적인 인증 시스템
-- **타입 안전성**: TypeScript로 사용자 정보 타입 정의
+# 테스트(도입 시)
+yarn test
+```
 
-### 6. 현재 구현된 기능
+### 라우팅 구조(요약)
+```
+app/
+  _layout.tsx                   # 루트(AuthProvider, QueryClientProvider, ErrorBoundary)
+  (tabs)/                       # 하단 탭
+    home/index.tsx
+    chat/index.tsx
+    profile/index.tsx
+  (stack)/                      # 스택 화면들
+    request/ [...].tsx
+    helper/  [...].tsx
+    chat/    [id].tsx
+  auth/                         # 인증 그룹
+    index.tsx                   # 로그인 진입
+    callback/kakao/index.tsx    # OAuth 콜백 처리
+```
 
-- ✅ 카카오 네이티브 로그인
-- ✅ 사용자 정보 저장 (AsyncStorage)
-- ✅ 로그인 상태 관리 (Auth Context)
-- ✅ 자동 로그인 (앱 재시작시)
-- ✅ 로그아웃 기능
-- ⏸️ Supabase 연동 (주석처리됨)
-- ⏸️ 데이터베이스 저장 (주석처리됨)
+### 코드 스타일/컨벤션
+- 파일/폴더: 기능(도메인) 우선 구조(`features/*`). 화면은 얇게 유지.
+- 네이밍: 서비스는 동사(행위), 훅은 `use*`, 컴포넌트는 PascalCase.
+- 에러 처리: 서비스에서 throw, 훅/화면에서 사용자 메시지로 변환(`components/ui/Alert.ts`, `ErrorBoundary`).
+- 커밋: feat/fix/refactor/chore/docs/test 형식, 명확한 서술.
 
-### 7. 데이터베이스 연동 (향후 재활성화 예정)
+### 향후 과제(추천)
+- React Query 전면 적용(남은 훅 마이그레이션), 전역 ErrorBoundary 개선(재시도/리포트)
+- 이미지 캐시(expo-image), 리스트 `getItemLayout` 도입, 스켈레톤 로딩 UI
+- 서비스 유닛 테스트 확대 및 CI(린트/테스트) 파이프라인
 
-Supabase 문제가 해결되면 다음 코드의 주석을 해제하여 데이터베이스 연동을 재활성화할 수 있습니다:
-
-**파일 위치:**
-- `hooks/useAuth.tsx` - Supabase 인증 코드
-- `app/auth/index.tsx` - OAuth 로그인 코드
-- `app/helper/index.tsx` - 신청서 조회 코드
-- `app/helper/register/complete.tsx` - 신청서 저장 코드
-
-### 8. 디버깅
-
-로그인 문제가 발생하면 다음을 확인하세요:
-
-1. **환경 변수**: `EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY`가 올바르게 설정되었는지 확인
-2. **개발 빌드**: 카카오 네이티브 SDK는 Expo Go에서 동작하지 않으므로 개발 빌드 필요
-3. **플랫폼 설정**: Kakao 개발자 포털에서 Bundle ID/Package Name이 올바른지 확인
-4. **콘솔 로그**: 로그인 과정에서 발생하는 에러 메시지 확인
-
-### 9. 참고 문서
-
-- [Kakao Developers Portal](https://developers.kakao.com)
-- [@react-native-seoul/kakao-login](https://github.com/react-native-seoul/react-native-kakao-login)
-- [Expo Development Build](https://docs.expo.dev/develop/development-builds/introduction/)
+---
+문의/제안은 PR 또는 이슈로 남겨주세요. 유지보수와 기능 확장을 고려한 구조로 계속 고도화해 나갑니다.
