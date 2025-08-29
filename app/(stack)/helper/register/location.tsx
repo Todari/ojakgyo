@@ -8,12 +8,7 @@ import { NaverMapView, NaverMapViewRef } from '@mj-studio/react-native-naver-map
 import { useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 
-type SearchResult = {
-  title: string;
-  address?: string;
-  x: number; // lng
-  y: number; // lat
-};
+import { searchPlaces, type SearchResult } from '@/features/map/services/naverPlaces';
 
 const DEFAULT_LAT = 37.5665; // 서울 시청
 const DEFAULT_LNG = 126.9780;
@@ -55,30 +50,11 @@ export default function HelperLocationPage() {
     setLng(longitude);
   }, []);
 
-  const hasNaverApiKeys = !!process.env.EXPO_PUBLIC_NAVER_MAPS_KEY_ID && !!process.env.EXPO_PUBLIC_NAVER_MAPS_KEY;
-
   const handleSearch = async () => {
     if (!search.trim()) return;
-    if (!hasNaverApiKeys) {
-      Alert.alert('설정 필요', '네이버 지역 검색을 사용하려면 환경변수 EXPO_PUBLIC_NAVER_MAPS_KEY_ID/EXPO_PUBLIC_NAVER_MAPS_KEY를 설정해주세요.');
-      return;
-    }
     try {
       setSearching(true);
-      const url = `https://naveropenapi.apigw.ntruss.com/map-place/v1/search?query=${encodeURIComponent(search.trim())}&display=5`;
-      const res = await fetch(url, {
-        headers: {
-          'X-NCP-APIGW-API-KEY-ID': process.env.EXPO_PUBLIC_NAVER_MAPS_KEY_ID as string,
-          'X-NCP-APIGW-API-KEY': process.env.EXPO_PUBLIC_NAVER_MAPS_KEY as string,
-        },
-      });
-      const json = await res.json();
-      const items: SearchResult[] = (json?.places || json?.items || []).map((item: any) => ({
-        title: item.name || item.title,
-        address: item.road_address || item.address,
-        x: parseFloat(item.x || item.mapx || item.longitude),
-        y: parseFloat(item.y || item.mapy || item.latitude),
-      })).filter((v: any) => Number.isFinite(v.x) && Number.isFinite(v.y));
+      const items = await searchPlaces(search.trim());
       setResults(items);
     } catch (e) {
       console.error('Search error', e);

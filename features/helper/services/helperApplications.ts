@@ -31,4 +31,26 @@ export async function listHelperApplications(): Promise<HelperApplicationListRow
   return (data as unknown) as HelperApplicationListRow[];
 }
 
+export type CreateHelperApplicationInput = {
+  user_id: number;
+  name: string;
+  age: number;
+  categories: string[];
+  introduction: string;
+  experience?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  status?: 'published' | 'private';
+};
+
+export async function createHelperApplication(input: CreateHelperApplicationInput): Promise<void> {
+  const payload: any = {
+    ...input,
+    status: input.status ?? 'published',
+    created_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from('helper_applications').insert(payload);
+  if (error) throw error;
+}
+
 

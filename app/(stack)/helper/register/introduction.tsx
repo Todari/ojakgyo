@@ -9,22 +9,28 @@ import { Input } from "@/components/Input";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from '@/hooks/useAuth';
 import { BottomButton } from "@/components/BottomButton";
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { helperIntroSchema, type HelperIntroForm } from '@/features/helper/schemas/helperApplication';
 
 export default function HelperIntroductionPage() {
   const router = useRouter();
   const { categories, lat, lng } = useLocalSearchParams();
   const { profile } = useAuth();
-  const [age, setAge] = useState('');
-  const [introduction, setIntroduction] = useState('');
-  const [experience, setExperience] = useState('');
+  const { control, handleSubmit, watch, formState: { isValid } } = useForm<HelperIntroForm>({
+    resolver: zodResolver(helperIntroSchema),
+    mode: 'onChange',
+    defaultValues: { age: '', introduction: '', experience: '' },
+  });
+  const age = watch('age');
+  const introduction = watch('introduction');
+  const experience = watch('experience');
 
   const selectedCategories = typeof categories === 'string' ? categories.split(',') : [];
 
-  const handleNext = () => {
-    if (!age.trim()) { Alert.alert('알림', '나이를 입력해주세요.'); return; }
-    if (!introduction.trim()) { Alert.alert('알림', '자기소개를 작성해주세요.'); return; }
+  const onValid = (values: HelperIntroForm) => {
     const params = new URLSearchParams({
-      categories: selectedCategories.join(','), age: age.trim(), introduction: introduction.trim(), experience: experience.trim(),
+      categories: selectedCategories.join(','), age: values.age.trim(), introduction: values.introduction.trim(), experience: (values.experience || '').trim(),
       lat: typeof lat === 'string' ? lat : '', lng: typeof lng === 'string' ? lng : '',
     });
     router.push(`/helper/register/complete?${params.toString()}`);
@@ -39,21 +45,39 @@ export default function HelperIntroductionPage() {
         <View style={styles.formContainer}>
           <View style={styles.inputGroup}>
             <Typography variant='body' weight='medium' style={styles.label}>나이 *</Typography>
-            <Input placeholder="나이를 입력해주세요" value={age} onChangeText={setAge} keyboardType="numeric" />
+            <Controller
+              control={control}
+              name="age"
+              render={({ field: { value, onChange } }) => (
+                <Input placeholder="나이를 입력해주세요" value={value} onChangeText={onChange} keyboardType="numeric" />
+              )}
+            />
           </View>
           <View style={styles.inputGroup}>
             <Typography variant='body' weight='medium' style={styles.label}>자기소개 *</Typography>
-            <TextArea placeholder="본인을 소개해주세요. 성격, 취미, 특기 등을 자유롭게 작성해주세요." value={introduction} onChangeText={setIntroduction} maxLength={500} style={styles.textArea} />
-            <Typography variant='caption' style={styles.counter}>{introduction.length}/500</Typography>
+            <Controller
+              control={control}
+              name="introduction"
+              render={({ field: { value, onChange } }) => (
+                <TextArea placeholder="본인을 소개해주세요. 성격, 취미, 특기 등을 자유롭게 작성해주세요." value={value} onChangeText={onChange} maxLength={500} style={styles.textArea} />
+              )}
+            />
+            <Typography variant='caption' style={styles.counter}>{(introduction?.length ?? 0)}/500</Typography>
           </View>
           <View style={styles.inputGroup}>
             <Typography variant='body' weight='medium' style={styles.label}>관련 경험 (선택)</Typography>
-            <TextArea placeholder="선택한 카테고리와 관련된 경험이 있다면 작성해주세요." value={experience} onChangeText={setExperience} maxLength={300} style={styles.textArea} />
-            <Typography variant='caption' style={styles.counter}>{experience.length}/300</Typography>
+            <Controller
+              control={control}
+              name="experience"
+              render={({ field: { value, onChange } }) => (
+                <TextArea placeholder="선택한 카테고리와 관련된 경험이 있다면 작성해주세요." value={value ?? ''} onChangeText={onChange} maxLength={300} style={styles.textArea} />
+              )}
+            />
+            <Typography variant='caption' style={styles.counter}>{(experience?.length ?? 0)}/300</Typography>
           </View>
         </View>
       </ScrollView>
-      <BottomButton title="완료하기" onPress={handleNext} disabled={!age.trim() || !introduction.trim()} />
+      <BottomButton title="완료하기" onPress={handleSubmit(onValid)} disabled={!isValid} />
     </SafeAreaView>
   );
 }

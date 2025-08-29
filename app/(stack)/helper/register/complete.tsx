@@ -6,7 +6,7 @@ import { Typography } from "@/components/Typography";
 import { ToggleChip } from "@/components/ToggleChip";
 import { BottomButton } from "@/components/BottomButton";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { supabase } from "@/utils/supabase";
+import { createHelperApplication } from "@/features/helper/services/helperApplications";
 import { useAuth } from "@/hooks/useAuth";
 import { CATEGORY_MAP } from "@/constants/categories";
 
@@ -29,43 +29,12 @@ export default function HelperCompletePage() {
         introduction: introduction as string,
         experience: (experience as string) || null,
         status: 'published',
-        created_at: new Date().toISOString(),
       };
       const latNum = lat ? parseFloat(lat as string) : NaN;
       const lngNum = lng ? parseFloat(lng as string) : NaN;
       if (Number.isFinite(latNum) && Number.isFinite(lngNum)) { payload.lat = latNum; payload.lng = lngNum; }
 
-      const { error: firstError } = await supabase.from('helper_applications').insert(payload);
-      if (firstError) {
-        if (firstError.code === 'PGRST204' || firstError.message?.includes("'lat' column")) {
-          const { error: retryError } = await supabase.from('helper_applications').insert({
-            user_id: profile.id,
-            name: (name as string) || (profile.name as string) || '이름 미설정',
-            age: parseInt(age as string),
-            categories: selectedCategories,
-            introduction: introduction as string,
-            experience: (experience as string) || null,
-            status: 'published',
-            created_at: new Date().toISOString(),
-          });
-          if (retryError) {
-            if (retryError.code === '42P01') {
-              Alert.alert('데이터베이스 오류', 'helper_applications 테이블이 없습니다. 관리자에게 문의해주세요.');
-              return;
-            }
-            Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다. 코드: ${retryError.code || 'Unknown'}`);
-            return;
-          }
-          Alert.alert('등록 완료!', '도움 신청서가 등록되었습니다. 위치 컬럼이 없어 위치 저장은 생략되었습니다.', [{ text: '확인', onPress: () => router.replace('/(tabs)/home') }]);
-          return;
-        }
-        if (firstError.code === '42P01') {
-          Alert.alert('데이터베이스 오류', 'helper_applications 테이블이 없습니다. 관리자에게 문의해주세요.');
-          return;
-        }
-        Alert.alert('오류', `신청서 제출 중 오류가 발생했습니다. 코드: ${firstError.code || 'Unknown'}`);
-        return;
-      }
+      await createHelperApplication(payload);
       Alert.alert('등록 완료!', '도움 신청서가 성공적으로 등록되었습니다.', [{ text: '확인', onPress: () => router.replace('/(tabs)/home') }]);
     } catch (e) {
       Alert.alert('오류', '예상치 못한 오류가 발생했습니다.');
