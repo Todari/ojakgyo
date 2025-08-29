@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { NaverMapView, NaverMapViewRef } from '@mj-studio/react-native-naver-map';
-import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Typography } from '@/components/Typography';
 import { HELP_CATEGORIES } from '@/constants/categories';
-import { supabase } from '@/utils/supabase';
+import { useLocationPermission } from '@/features/map/hooks/useLocationPermission';
+import { useNaverMarkers } from '@/features/map/hooks/useNaverMarkers';
+import { listHelpersWithLocation, type HelperApplicationRow } from '@/features/helper/services/helperApplications';
 
-type HelperApplicationRow = { id: number; name: string; lat: number | null; lng: number | null; categories: string[]; status?: string | null; users?: { thumbnail_url: string | null } | null; };
 type ScreenPos = { isValid: boolean; x: number; y: number };
 
 export default function RequestMapPage() {
@@ -17,43 +17,20 @@ export default function RequestMapPage() {
   const [helpers, setHelpers] = useState<HelperApplicationRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [positions, setPositions] = useState<Record<string, ScreenPos>>({});
+  
 
-  useEffect(() => { (async () => {
-    try {
-      const { granted } = await Location.requestForegroundPermissionsAsync();
-      if (granted) { await Location.requestBackgroundPermissionsAsync(); }
-    } catch (e) { console.error(`Location request has been failed: ${e}`); }
-  })(); }, []);
+  const permission = useLocationPermission();
 
   useEffect(() => { (async () => {
     setIsLoading(true); setError(null);
     try {
-      const { data, error } = await supabase
-        .from('helper_applications')
-        .select('id, name, lat, lng, categories, status, users:users!helper_applications_user_id_fkey(thumbnail_url)')
-        .not('lat', 'is', null)
-        .not('lng', 'is', null);
-      if (error) { console.error('Error fetching help requests for map:', error); setError('요청을 불러오는 중 오류가 발생했습니다.'); }
-      else if (data) { setHelpers((data as unknown) as HelperApplicationRow[]); }
+      const rows = await listHelpersWithLocation();
+      setHelpers(rows);
     } catch (e) { console.error('Unexpected error:', e); setError('예상치 못한 오류가 발생했습니다.'); }
     finally { setIsLoading(false); }
   })(); }, []);
 
-  const updateScreenPositions = useCallback(async () => {
-    if (!mapRef.current || helpers.length === 0) return;
-    try {
-      const entries = await Promise.all(helpers.map(async (row) => {
-        const res = await mapRef.current!.coordinateToScreen({ latitude: row.lat as number, longitude: row.lng as number });
-        const mapped: ScreenPos = { isValid: res.isValid, x: res.screenX, y: res.screenY };
-        return [String(row.id), mapped] as const;
-      }));
-      const next: Record<string, ScreenPos> = {}; entries.forEach(([id, res]) => { next[id] = res; });
-      setPositions(next);
-    } catch {}
-  }, [helpers]);
-
-  useEffect(() => { updateScreenPositions(); }, [helpers, updateScreenPositions]);
+  const { positions, updateScreenPositions } = useNaverMarkers(mapRef, helpers);
 
   const initialRegion = { latitude: 37.5519, longitude: 126.9918, latitudeDelta: 0.0922, longitudeDelta: 0.0421 };
   const mapType: any = 'Basic';

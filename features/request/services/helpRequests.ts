@@ -38,4 +38,24 @@ export async function getLatestByUser(userId: number): Promise<HelpRequestView |
   };
 }
 
+export type HelpRequestRow = {
+  id: number;
+  name: string | null;
+  lat: number | null;
+  lng: number | null;
+  categories: string[];
+  status?: string | null;
+  users?: { thumbnail_url: string | null } | null;
+};
+
+export async function listRequestsWithLocation(): Promise<HelpRequestRow[]> {
+  const { data, error } = await supabase
+    .from('help_requests')
+    .select('id, name, lat, lng, categories, status, users:users!help_requests_user_id_fkey(thumbnail_url)')
+    .not('lat', 'is', null)
+    .not('lng', 'is', null);
+  if (error) throw error;
+  return (data as unknown) as HelpRequestRow[];
+}
+
 
