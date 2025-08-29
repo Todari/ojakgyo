@@ -7,6 +7,8 @@ import { Typography } from '@/components/Typography';
 import { ToggleChip } from '@/components/ToggleChip';
 import { HELP_CATEGORIES } from '@/constants/categories';
 import { useHelperList } from '@/features/helper/hooks/useHelperList';
+import { CategoryChips } from '@/components/category/CategoryChips';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export default function HelperListPage() {
   const router = useRouter();
@@ -25,15 +27,16 @@ export default function HelperListPage() {
       <Header left='back' title='도우미 목록' />
 
       <View style={styles.filterRow}>
-        {HELP_CATEGORIES.map((c) => (
-          <ToggleChip key={c.id} label={c.displayTitle || c.label} selected={selected.includes(c.id)} onPress={() => toggle(c.id)} size='sm' variant='primary' />
-        ))}
+        <CategoryChips selected={selected} onToggle={toggle} />
       </View>
 
       <FlatList
         data={filtered}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={{ gap: 12 }}
+        contentContainerStyle={{ gap: 12, paddingBottom: 16 }}
+        initialNumToRender={10}
+        windowSize={5}
+        removeClippedSubviews
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} onPress={() => router.push(`/helper/${item.id}`)}>
             <Typography variant='body' weight='semibold'>{item.name}</Typography>
@@ -46,7 +49,7 @@ export default function HelperListPage() {
             </View>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={!loading ? <Typography variant='body' align='center' style={{ marginTop: 32 }}>표시할 프로필이 없습니다.</Typography> : null}
+        ListEmptyComponent={!loading ? <EmptyState title='표시할 프로필이 없습니다' /> : null}
       />
     </SafeAreaView>
   );
