@@ -58,4 +58,15 @@ export async function listRequestsWithLocation(): Promise<HelpRequestRow[]> {
   return (data as unknown) as HelpRequestRow[];
 }
 
+export type HelpRequestListRow = { id: number; name: string | null; categories: string[]; created_at: string };
+
+export async function listRequests(): Promise<HelpRequestListRow[]> {
+  const { data, error } = await supabase
+    .from('help_requests')
+    .select('id, name, categories, created_at')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data as unknown) as HelpRequestListRow[];
+}
+
 

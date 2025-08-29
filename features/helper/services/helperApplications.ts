@@ -20,4 +20,15 @@ export async function listHelpersWithLocation(): Promise<HelperApplicationRow[]>
   return (data as unknown) as HelperApplicationRow[];
 }
 
+export type HelperApplicationListRow = { id: number; name: string; categories: string[]; created_at: string };
+
+export async function listHelperApplications(): Promise<HelperApplicationListRow[]> {
+  const { data, error } = await supabase
+    .from('helper_applications')
+    .select('id, name, categories, created_at')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data as unknown) as HelperApplicationListRow[];
+}
+
 

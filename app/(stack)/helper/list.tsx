@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from '@/components/Themed';
@@ -6,37 +6,19 @@ import { Header } from '@/components/Header';
 import { Typography } from '@/components/Typography';
 import { ToggleChip } from '@/components/ToggleChip';
 import { HELP_CATEGORIES } from '@/constants/categories';
-import { supabase } from '@/utils/supabase';
-
-type Row = { id: number; name: string; categories: string[]; created_at: string };
+import { useHelperList } from '@/features/helper/hooks/useHelperList';
 
 export default function HelperListPage() {
   const router = useRouter();
   const { category } = useLocalSearchParams();
   const [selected, setSelected] = useState<string[]>(() => (typeof category === 'string' ? [category] : []));
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { rows, loading, filterBy } = useHelperList();
 
   const toggle = (id: string) => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('helper_applications')
-        .select('id, name, categories, created_at')
-        .order('created_at', { ascending: false });
-      if (!error && data) setRows(data as any);
-      setLoading(false);
-    })();
-  }, []);
-
-  const filtered = useMemo(() => {
-    if (selected.length === 0) return rows;
-    return rows.filter((r) => (r.categories || []).some((c) => selected.includes(c)));
-  }, [rows, selected]);
+  const filtered = useMemo(() => filterBy(selected), [rows, selected]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
