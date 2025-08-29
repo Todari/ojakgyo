@@ -69,4 +69,34 @@ export async function listRequests(): Promise<HelpRequestListRow[]> {
   return (data as unknown) as HelpRequestListRow[];
 }
 
+export type HelpRequestFull = { id: number; user_id: number; categories: string[]; details: string; status: 'published' | 'private' };
+
+export async function getLatestFullByUser(userId: number): Promise<HelpRequestFull | null> {
+  const { data, error } = await supabase
+    .from('help_requests')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    if ((error as any).code === 'PGRST116') return null;
+    throw error;
+  }
+  return (data as unknown) as HelpRequestFull | null;
+}
+
+export async function updateHelpRequest(id: number, updates: Partial<HelpRequestFull>) {
+  const { error } = await supabase
+    .from('help_requests')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteHelpRequest(id: number) {
+  const { error } = await supabase.from('help_requests').delete().eq('id', id);
+  if (error) throw error;
+}
+
 

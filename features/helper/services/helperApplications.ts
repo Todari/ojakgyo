@@ -53,4 +53,29 @@ export async function createHelperApplication(input: CreateHelperApplicationInpu
   if (error) throw error;
 }
 
+export async function getLatestHelperApplicationByUser(userId: number) {
+  const { data, error } = await supabase
+    .from('helper_applications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data as any;
+}
+
+export async function updateHelperApplication(id: number, updates: Partial<CreateHelperApplicationInput>) {
+  const { error } = await supabase
+    .from('helper_applications')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) throw error;
+}
+
+export async function deleteHelperApplication(id: number) {
+  const { error } = await supabase.from('helper_applications').delete().eq('id', id);
+  if (error) throw error;
+}
+
 

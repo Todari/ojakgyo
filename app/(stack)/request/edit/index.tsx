@@ -10,7 +10,7 @@ import { BottomButton } from '@/components/BottomButton';
 import { HELP_CATEGORIES } from '@/constants/categories';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/utils/supabase';
+import { useHelpRequestEdit } from '@/features/request/hooks/useHelpRequestEdit';
 
 type RequestStatus = 'published' | 'private';
 
@@ -26,38 +26,19 @@ export default function RequestEditPage() {
   const [details, setDetails] = useState('');
   const [status, setStatus] = useState<RequestStatus>('published');
 
-  useEffect(() => { if (profile?.id) fetchRequest(); }, [profile]);
+  const userId = typeof profile?.id === 'number' ? profile?.id : undefined;
+  const { data, loading: fetching, update, remove } = useHelpRequestEdit(userId);
 
-  const fetchRequest = async () => {
-    if (!profile?.id) return;
-    try {
-      const { data, error } = await supabase
-        .from('help_requests')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-      if (error) {
-        if (error.code === 'PGRST116') { Alert.alert('알림', '등록된 도움 요청이 없습니다.', [{ text: '확인', onPress: () => router.back() }]); return; }
-        if (error.code === '42P01') { Alert.alert('오류', 'help_requests 테이블이 존재하지 않습니다.', [{ text: '확인', onPress: () => router.back() }]); return; }
-        console.error('Error fetching help request:', error);
-        Alert.alert('오류', '요청서를 불러오는데 실패했습니다.', [{ text: '확인', onPress: () => router.back() }]);
-        return;
-      }
-      if (data) {
-        const req = data as HelpRequest;
-        setRequest(req);
-        setSelectedCategories(req.categories || []);
-        setDetails(req.details || '');
-        setStatus(req.status || 'published');
-      }
-    } catch (e) {
-      console.error('Unexpected error:', e);
-      Alert.alert('오류', '예상치 못한 오류가 발생했습니다.');
-      router.back();
-    } finally { setLoading(false); }
-  };
+  useEffect(() => {
+    setLoading(fetching);
+    if (data) {
+      const req = data as HelpRequest;
+      setRequest(req);
+      setSelectedCategories(req.categories || []);
+      setDetails(req.details || '');
+      setStatus((req.status as any) || 'published');
+    }
+  }, [fetching, data]);
 
   const handleCategoryToggle = (categoryId: string) => {
     setSelectedCategories(prev => (prev.includes(categoryId) ? prev.filter(id => id !== categoryId) : [...prev, categoryId]));
@@ -70,11 +51,7 @@ export default function RequestEditPage() {
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('help_requests')
-        .update({ categories: selectedCategories, details: details.trim(), status, updated_at: new Date().toISOString() })
-        .eq('id', request.id);
-      if (error) { console.error('Error updating help request:', error); Alert.alert('오류', '요청서 수정 중 오류가 발생했습니다.'); return; }
+      await update(Number(request.id), { categories: selectedCategories, details: details.trim(), status });
       Alert.alert('수정 완료', '도움 요청이 성공적으로 수정되었습니다.', [{ text: '확인', onPress: () => router.back() }]);
     } catch (e) { console.error('Unexpected error:', e); Alert.alert('오류', '예상치 못한 오류가 발생했습니다.'); }
     finally { setSaving(false); }
@@ -86,8 +63,7 @@ export default function RequestEditPage() {
       { text: '취소', style: 'cancel' },
       { text: '삭제', style: 'destructive', onPress: async () => {
         try {
-          const { error } = await supabase.from('help_requests').delete().eq('id', request.id);
-          if (error) { console.error('Error deleting help request:', error); Alert.alert('오류', '요청 삭제 중 오류가 발생했습니다.'); return; }
+          await remove(Number(request.id));
           Alert.alert('삭제 완료', '도움 요청이 삭제되었습니다.', [{ text: '확인', onPress: () => router.back() }]);
         } catch (e) { console.error('Unexpected error:', e); Alert.alert('오류', '예상치 못한 오류가 발생했습니다.'); }
       }}

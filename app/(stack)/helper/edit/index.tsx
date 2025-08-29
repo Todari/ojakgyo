@@ -10,7 +10,7 @@ import { HELP_CATEGORIES } from "@/constants/categories";
 import { TextArea } from "@/components/TextArea";
 import { Input } from "@/components/Input";
 import { useRouter } from "expo-router";
-import { supabase } from "@/utils/supabase";
+import { useHelperApplication } from "@/features/helper/hooks/useHelperApplication";
 import { useAuth } from "@/hooks/useAuth";
 
 type RequestStatus = 'published' | 'private';
@@ -37,54 +37,21 @@ export default function HelperEditPage() {
   const [experience, setExperience] = useState('');
   const [status, setStatus] = useState<RequestStatus>('published');
 
+  const userId = typeof profile?.id === 'number' ? profile?.id : undefined;
+  const { data, loading: fetching, update, remove } = useHelperApplication(userId);
+
   useEffect(() => {
-    if (profile?.id) {
-      fetchApplication();
+    setLoading(fetching);
+    if (data) {
+      setApplication(data as any);
+      const app = data as HelperApplication;
+      setSelectedCategories(app.categories || []);
+      setAge(app.age?.toString() || '');
+      setIntroduction(app.introduction || '');
+      setExperience(app.experience || '');
+      setStatus(app.status || 'published');
     }
-  }, [profile]);
-
-  const fetchApplication = async () => {
-    if (!profile?.id) return;
-    try {
-      const { data, error } = await supabase
-        .from('helper_applications')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          Alert.alert('알림', '등록된 신청서가 없습니다.', [{ text: '확인', onPress: () => router.back() }]);
-          return;
-        }
-        if (error.code === '42P01') {
-          Alert.alert('오류', 'helper_applications 테이블이 존재하지 않습니다.', [{ text: '확인', onPress: () => router.back() }]);
-          return;
-        }
-        console.error('Error fetching application:', error);
-        Alert.alert('오류', '신청서를 불러오는데 실패했습니다.', [{ text: '확인', onPress: () => router.back() }]);
-        return;
-      }
-
-      if (data) {
-        setApplication(data as any);
-        const app = data as HelperApplication;
-        setSelectedCategories(app.categories || []);
-        setAge(app.age?.toString() || '');
-        setIntroduction(app.introduction || '');
-        setExperience(app.experience || '');
-        setStatus(app.status || 'published');
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      Alert.alert('오류', '예상치 못한 오류가 발생했습니다.');
-      router.back();
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetching, data]);
 
   const handleCategoryToggle = (categoryId: string) => {
     setSelectedCategories(prev => (
@@ -102,23 +69,13 @@ export default function HelperEditPage() {
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('helper_applications')
-        .update({
-          age: parseInt(age),
-          categories: selectedCategories,
-          introduction: introduction.trim(),
-          experience: experience.trim() || null,
-          status: status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', application.id);
-
-      if (error) {
-        console.error('Error updating application:', error);
-        Alert.alert('오류', '신청서 수정 중 오류가 발생했습니다.');
-        return;
-      }
+      await update(Number(application.id), {
+        age: parseInt(age),
+        categories: selectedCategories,
+        introduction: introduction.trim(),
+        experience: experience.trim() || null,
+        status: status,
+      });
 
       Alert.alert('수정 완료!', '신청서가 성공적으로 수정되었습니다.', [{ text: '확인', onPress: () => router.back() }]);
     } catch (error) {
@@ -139,8 +96,7 @@ export default function HelperEditPage() {
         {
           text: '삭제', style: 'destructive', onPress: async () => {
             try {
-              const { error } = await supabase.from('helper_applications').delete().eq('id', application.id);
-              if (error) { console.error('Error deleting application:', error); Alert.alert('오류', '신청서 삭제 중 오류가 발생했습니다.'); return; }
+              await remove(Number(application.id));
               Alert.alert('삭제 완료', '신청서가 삭제되었습니다.', [{ text: '확인', onPress: () => router.back() }]);
             } catch (error) {
               console.error('Unexpected error:', error);
