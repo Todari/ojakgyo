@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,6 +33,8 @@ export default function RootLayout() {
     PretendardThin: require('../assets/fonts/PretendardThin.ttf'),
   });
 
+  const [queryClient] = React.useState(() => new QueryClient());
+
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
@@ -42,12 +45,12 @@ export default function RootLayout() {
     return null;
   }
 
-  const queryClient = new QueryClient();
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
-        <RootLayoutNav />
+        <ErrorBoundary>
+          <RootLayoutNav />
+        </ErrorBoundary>
       </QueryClientProvider>
     </AuthProvider>
   );
