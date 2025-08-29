@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -41,9 +42,13 @@ export default function RootLayout() {
     return null;
   }
 
+  const queryClient = new QueryClient();
+
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <QueryClientProvider client={queryClient}>
+        <RootLayoutNav />
+      </QueryClientProvider>
     </AuthProvider>
   );
 }
