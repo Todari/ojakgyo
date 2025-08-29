@@ -99,4 +99,24 @@ export async function deleteHelpRequest(id: number) {
   if (error) throw error;
 }
 
+export type CreateHelpRequestInput = {
+  user_id: number;
+  name: string | null;
+  categories: string[];
+  details: string;
+  lat?: number | null;
+  lng?: number | null;
+  status?: 'published' | 'private';
+};
+
+export async function createHelpRequest(input: CreateHelpRequestInput) {
+  const payload: any = {
+    ...input,
+    status: input.status ?? 'published',
+    created_at: new Date().toISOString(),
+  };
+  const { error } = await supabase.from('help_requests').insert(payload);
+  if (error) throw error;
+}
+
 

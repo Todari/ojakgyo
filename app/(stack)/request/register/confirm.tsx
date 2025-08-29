@@ -7,7 +7,7 @@ import { ToggleChip } from '@/components/ToggleChip';
 import { BottomButton } from '@/components/BottomButton';
 import { CATEGORY_MAP } from '@/constants/categories';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { supabase } from '@/utils/supabase';
+import { createHelpRequest } from '@/features/request/services/helpRequests';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function RequestConfirmPage() {
@@ -21,23 +21,13 @@ export default function RequestConfirmPage() {
     if (!profile?.id) { Alert.alert('오류', '로그인이 필요합니다.'); router.push('/auth'); return; }
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('help_requests')
-        .insert({
-          user_id: profile.id,
-          name: profile.name || null,
-          categories: selectedCategories,
-          details: details as string,
-          status: 'published',
-          created_at: new Date().toISOString(),
-          ...(typeof lat === 'string' && typeof lng === 'string' ? { lat: parseFloat(lat), lng: parseFloat(lng) } : {}),
-        });
-      if (error) {
-        console.error('Error submitting help request:', error);
-        if (error.code === '42P01') { Alert.alert('데이터베이스 오류', 'help_requests 테이블이 존재하지 않습니다.'); return; }
-        Alert.alert('오류', `제출 중 오류가 발생했습니다. 코드: ${error.code || 'Unknown'}`);
-        return;
-      }
+      await createHelpRequest({
+        user_id: profile.id,
+        name: profile.name || null,
+        categories: selectedCategories,
+        details: String(details || ''),
+        ...(typeof lat === 'string' && typeof lng === 'string' ? { lat: parseFloat(lat), lng: parseFloat(lng) } : {}),
+      });
       Alert.alert('등록 완료', '도움 요청이 성공적으로 등록되었습니다.', [
         { text: '확인', onPress: () => router.replace('/(tabs)/home') }
       ]);

@@ -4,6 +4,7 @@ import { SafeAreaView } from '@/components/Themed';
 import { Typography } from '@/components/Typography';
 import { BottomButton } from '@/components/BottomButton';
 import * as Location from 'expo-location';
+import { useLocationPermission } from '@/features/map/hooks/useLocationPermission';
 import { NaverMapView, NaverMapViewRef } from '@mj-studio/react-native-naver-map';
 import { useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
@@ -40,14 +41,7 @@ export default function RequestLocationPage() {
     setLng(longitude);
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { granted } = await Location.requestForegroundPermissionsAsync();
-        if (granted) { await Location.requestBackgroundPermissionsAsync(); }
-      } catch (e) { console.error(`Location request has been failed: ${e}`); }
-    })();
-  }, []);
+  const perm = useLocationPermission();
 
   const initialRegion = { latitude: 37.5519, longitude: 126.9918, latitudeDelta: 0.0922, longitudeDelta: 0.0421 };
   const mapType = 'Basic' as const;
