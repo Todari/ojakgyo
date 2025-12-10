@@ -1,3 +1,4 @@
+import React, { useRef, useState } from 'react';
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "@/components/Themed";
 import { Header } from "@/components/Header";
@@ -18,6 +19,8 @@ import * as AuthSession from 'expo-auth-session';
 export default function AuthPage() {
   const router = useRouter();
   const { session } = useAuth();
+  const [authing, setAuthing] = useState(false);
+  const inFlightRef = useRef(false);
 
   // 항상 OAuth 방식 사용 (네이티브 SDK 제거)
   const handleKakaoLogin = async () => {
@@ -26,6 +29,18 @@ export default function AuthPage() {
 
   const handleWebOAuthLogin = async () => {
     try {
+      if (inFlightRef.current) {
+        console.log('Auth already in progress: skip');
+        return;
+      }
+      inFlightRef.current = true;
+      setAuthing(true);
+
+      // 사전 세션 정리 (중복 브라우저 세션 방지)
+      try { await WebBrowser.dismissBrowser(); } catch {}
+      try { (WebBrowser as any).coolDownAsync && await (WebBrowser as any).coolDownAsync(); } catch {}
+      try { (WebBrowser as any).warmUpAsync && await (WebBrowser as any).warmUpAsync(); } catch {}
+
       console.log("=== Kakao OAuth Login Started (OAuth Only Method) ===");
       
       // 네이티브/시뮬레이터/웹 공통 리다이렉트 URI (커스텀 스킴 기반)
@@ -159,6 +174,8 @@ export default function AuthPage() {
       console.error("Kakao login error:", error);
       Alert.alert("로그인 오류", "카카오 로그인 중 오류가 발생했습니다.");
     } finally {
+      inFlightRef.current = false;
+      setAuthing(false);
       // iOS에서 웹 인증 쿠키가 남아 재인증/로그아웃 충돌을 유발하는 케이스 감소
       try { await WebBrowser.dismissBrowser(); } catch {}
       // 일부 환경에서만 존재하는 API 대비: 존재 여부 체크 후 호출
@@ -195,7 +212,9 @@ export default function AuthPage() {
         <View style={styles.buttonContainer}>
           <Button 
             title="카카오로 로그인" 
-            onPress={handleKakaoLogin} 
+            onPress={handleKakaoLogin}
+            loading={authing}
+            disabled={authing}
           />
         </View>
       </View>
