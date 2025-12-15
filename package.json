@@ -60,8 +60,7 @@
     "jest-expo": "~53.0.13",
     "react-test-renderer": "19.0.0",
     "supabase": "^2.26.9",
-    "typescript": "~5.8.3",
-    "@expo/metro-config": "~0.20.18"
+    "typescript": "~5.8.3"
   },
   "resolutions": {
     "@expo/config-plugins": "~10.1.1"
