@@ -68,10 +68,15 @@
             "extraMavenRepos": [
               "https://repository.map.naver.com/archive/maven"
             ]
+          },
+          "ios": {
+            "useFrameworks": "static"
           }
         }
       ],
-      "expo-router"
+      "expo-router",
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
