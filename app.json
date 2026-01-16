@@ -17,6 +17,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ojakgyo.donghaeng",
       "appleTeamId": "3FQQ7TFWF7",
+      "swiftVersion": "5.0",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "이 앱은 지도를 표시하고 위치 기반 서비스를 위해 사용자의 위치 접근 권한이 필요합니다.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "이 앱은 백그라운드에서도 정확한 위치 기반 서비스를 위해 위치 접근 권한이 필요할 수 있습니다.",
@@ -43,6 +44,19 @@
     },
     "plugins": [
       [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          },
+          "android": {
+            "extraMavenRepos": [
+              "https://repository.map.naver.com/archive/maven"
+            ]
+          }
+        }
+      ],
+      [
         "@mj-studio/react-native-naver-map",
         {
           "client_id": "df1dejil9w",
@@ -61,22 +75,8 @@
           }
         }
       ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "extraMavenRepos": [
-              "https://repository.map.naver.com/archive/maven"
-            ]
-          },
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
-      ],
       "expo-router",
-      "expo-font",
-      "expo-web-browser"
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
